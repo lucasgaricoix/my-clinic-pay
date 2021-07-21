@@ -1,5 +1,5 @@
 package br.com.myclinicpay.domain.usecases.payment
 
-interface DeleteTypeValueById {
+interface DeletePaymentTypeById {
     fun deleteById(id: String)
 }
