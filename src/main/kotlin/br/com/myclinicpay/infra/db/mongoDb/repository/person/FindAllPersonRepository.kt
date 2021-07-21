@@ -7,7 +7,9 @@ import br.com.myclinicpay.infra.db.mongoDb.Connection
 import br.com.myclinicpay.infra.db.mongoDb.entities.PersonEntity
 import org.bson.Document
 import org.springframework.data.mongodb.core.findAll
+import org.springframework.stereotype.Repository
 
+@Repository
 class FindAllPersonRepository : FindAllPersonRepository {
     private val collectionName = "person"
     override fun findAll(): List<Person> {

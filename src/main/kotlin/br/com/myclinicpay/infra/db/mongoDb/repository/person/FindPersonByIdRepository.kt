@@ -6,8 +6,10 @@ import br.com.myclinicpay.domain.model.person.Responsible
 import br.com.myclinicpay.infra.db.mongoDb.Connection
 import br.com.myclinicpay.infra.db.mongoDb.entities.PersonEntity
 import org.springframework.data.mongodb.core.findById
+import org.springframework.stereotype.Repository
 import java.lang.Exception
 
+@Repository
 class FindPersonByIdRepository : FindPersonByIdRepository {
     private val collectionName = "person"
     override fun findById(id: String): Person {

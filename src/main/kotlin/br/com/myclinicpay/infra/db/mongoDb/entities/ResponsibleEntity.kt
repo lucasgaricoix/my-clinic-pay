@@ -7,6 +7,6 @@ import org.springframework.data.mongodb.core.mapping.Document
 @Document("responsible")
 class ResponsibleEntity(
     @Id
-    val id: ObjectId? = null,
+    val id: ObjectId? = ObjectId.get(),
     val name: String
 )

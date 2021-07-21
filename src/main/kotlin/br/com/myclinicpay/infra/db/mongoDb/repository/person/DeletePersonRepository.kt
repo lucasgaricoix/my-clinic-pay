@@ -5,7 +5,9 @@ import br.com.myclinicpay.infra.db.mongoDb.Connection
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Repository
 
+@Repository
 class DeletePersonRepository : DeletePersonRepository {
     private val collectionName = "person"
     private val logger = LoggerFactory.getLogger(this.javaClass)
@@ -13,7 +15,7 @@ class DeletePersonRepository : DeletePersonRepository {
         val mongoTemplate = Connection.getTemplate()
         val query = Document("_id", ObjectId(id))
         val deleted = mongoTemplate.getCollection(collectionName).deleteOne(query)
-        if (deleted.wasAcknowledged()) {
+        if (!deleted.wasAcknowledged()) {
             logger.warn("Não foi encontrado a pessoa para exclusão.")
         }
     }

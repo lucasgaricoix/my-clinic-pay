@@ -7,7 +7,9 @@ import br.com.myclinicpay.infra.db.mongoDb.Connection
 import br.com.myclinicpay.infra.db.mongoDb.entities.PersonEntity
 import br.com.myclinicpay.infra.db.mongoDb.entities.ResponsibleEntity
 import org.bson.types.ObjectId
+import org.springframework.stereotype.Repository
 
+@Repository
 class CreatePersonRepository : CreatePersonRepository {
     private val collectionName = "person"
     override fun create(person: Person): Person {
