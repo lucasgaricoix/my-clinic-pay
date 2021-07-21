@@ -20,7 +20,7 @@ class PaymentTypeRequestMapping {
 
     @GetMapping
     fun findAll(requestEntity: RequestEntity<PaymentType>) : ResponseEntity<List<PaymentType>> {
-        return FindAllPaymentType().build().handleList(requestEntity)
+        return FindAllPaymentType().build().handle(requestEntity)
     }
 
     @GetMapping("/{id}")

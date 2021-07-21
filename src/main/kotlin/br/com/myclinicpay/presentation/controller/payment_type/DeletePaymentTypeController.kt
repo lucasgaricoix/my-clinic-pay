@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 
 @Controller
-class DeletePaymentTypeController(private val service: DeletePaymentTypeService) : ControllerInterface<PaymentType> {
+class DeletePaymentTypeController(private val service: DeletePaymentTypeService) : ControllerInterface<PaymentType, PaymentType> {
     override fun handle(request: RequestEntity<PaymentType>): ResponseEntity<PaymentType> {
         val id = request.url.path
         service.deleteById(id)

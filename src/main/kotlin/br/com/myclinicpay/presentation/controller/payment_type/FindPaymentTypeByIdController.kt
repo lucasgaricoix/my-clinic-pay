@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
 
-class FindPaymentTypeByIdController(private val service: FindPaymentTypeById) : ControllerInterface<PaymentType> {
+class FindPaymentTypeByIdController(private val service: FindPaymentTypeById) : ControllerInterface<PaymentType, PaymentType> {
     override fun handle(request: RequestEntity<PaymentType>): ResponseEntity<PaymentType> {
         val id = request.url.path.split("/")[2]
         return ResponseEntity(service.findById(id), HttpStatus.OK)

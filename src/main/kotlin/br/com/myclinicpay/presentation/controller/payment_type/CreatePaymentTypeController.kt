@@ -10,7 +10,7 @@ import org.springframework.stereotype.Controller
 
 @Controller
 class CreatePaymentTypeController(private val servicePayment: CreatePaymentTypeService) :
-    ControllerInterface<PaymentType> {
+    ControllerInterface<PaymentType, PaymentType> {
     override fun handle(request: RequestEntity<PaymentType>): ResponseEntity<PaymentType> {
         val body = request.body ?: throw Exception("Empty body")
 
