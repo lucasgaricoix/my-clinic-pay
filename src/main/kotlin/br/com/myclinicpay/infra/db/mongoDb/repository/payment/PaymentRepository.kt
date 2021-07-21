@@ -1,6 +1,6 @@
-package br.com.myclinicpay.infra.mongoDb.repository.payment
+package br.com.myclinicpay.infra.db.mongoDb.repository.payment
 
-import br.com.myclinicpay.infra.mongoDb.entities.PaymentEntity
+import br.com.myclinicpay.infra.db.mongoDb.entities.PaymentEntity
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.repository.MongoRepository
 

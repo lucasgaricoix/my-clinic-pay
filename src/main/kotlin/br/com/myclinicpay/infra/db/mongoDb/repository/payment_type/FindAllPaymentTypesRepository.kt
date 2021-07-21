@@ -1,9 +1,9 @@
-package br.com.myclinicpay.infra.mongoDb.repository.payment_type
+package br.com.myclinicpay.infra.db.mongoDb.repository.payment_type
 
 import br.com.myclinicpay.data.usecases.payment_type.FindAllPaymentTypeRepository
 import br.com.myclinicpay.domain.model.payment_type.PaymentType
-import br.com.myclinicpay.infra.mongoDb.Connection
-import br.com.myclinicpay.infra.mongoDb.entities.PaymentTypeEntity
+import br.com.myclinicpay.infra.db.mongoDb.Connection
+import br.com.myclinicpay.infra.db.mongoDb.entities.PaymentTypeEntity
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Repository
 

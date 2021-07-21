@@ -1,4 +1,4 @@
-package br.com.myclinicpay.infra.mongoDb
+package br.com.myclinicpay.infra.db.mongoDb
 
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings

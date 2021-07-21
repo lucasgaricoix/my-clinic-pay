@@ -1,4 +1,4 @@
-package br.com.myclinicpay.infra.mongoDb.entities
+package br.com.myclinicpay.infra.db.mongoDb.entities
 
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id

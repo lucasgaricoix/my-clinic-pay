@@ -1,7 +1,7 @@
-package br.com.myclinicpay.infra.mongoDb.repository.payment_type
+package br.com.myclinicpay.infra.db.mongoDb.repository.payment_type
 
 import br.com.myclinicpay.data.usecases.payment_type.DeletePaymentTypeByIdRepository
-import br.com.myclinicpay.infra.mongoDb.Connection
+import br.com.myclinicpay.infra.db.mongoDb.Connection
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.slf4j.Logger
