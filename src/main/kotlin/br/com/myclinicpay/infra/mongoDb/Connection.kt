@@ -17,12 +17,15 @@ class Connection {
             connectionInstance = MongoClients.create(mongoClientSettings)
         }
 
-        fun getConnection(): MongoTemplate {
+        private fun getConnection(): MongoClient? {
             if (connectionInstance == null) {
                 connect()
             }
+            return connectionInstance
+        }
 
-            return MongoTemplate(connectionInstance!!, "myclinicpay")
+        fun getTemplate(): MongoTemplate {
+            return MongoTemplate(getConnection()!!, "myclinicpay")
         }
     }
 }

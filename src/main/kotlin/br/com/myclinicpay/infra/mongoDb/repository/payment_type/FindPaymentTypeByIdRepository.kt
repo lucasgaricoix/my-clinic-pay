@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository
 class FindPaymentTypeByIdRepository : FindPaymentTypeByIdRepository {
     val collectionName = "payment_type"
     override fun findById(id: String): PaymentType {
-        val mongoTemplate = Connection.getConnection()
+        val mongoTemplate = Connection.getTemplate()
         val paymentTypeEntity = mongoTemplate.findById<PaymentTypeEntity>(ObjectId(id), collectionName)
             ?: throw Exception("Payment type is null.")
         return adapter(paymentTypeEntity)

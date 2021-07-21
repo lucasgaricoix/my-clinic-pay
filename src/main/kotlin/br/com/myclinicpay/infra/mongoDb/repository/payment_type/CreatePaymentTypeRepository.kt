@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository
 class CreatePaymentTypeRepository : CreatePaymentTypeRepository {
     val collectionName = "payment_type"
     override fun save(paymentType: PaymentType): PaymentType {
-        val mongoTemplate = Connection.getConnection()
+        val mongoTemplate = Connection.getTemplate()
         val typeValue = PaymentTypeEntity(null, paymentType.description, paymentType.value)
         val createdTypeValue = mongoTemplate.save(typeValue, collectionName)
         return adapter(createdTypeValue)

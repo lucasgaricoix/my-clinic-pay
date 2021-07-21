@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity
 
 class FindPaymentTypeByIdController(private val service: FindPaymentTypeById) : ControllerInterface<PaymentType, PaymentType> {
     override fun handle(request: RequestEntity<PaymentType>): ResponseEntity<PaymentType> {
-        val id = request.url.path.split("/")[2]
+        val id = request.url.path.split("/").last()
         return ResponseEntity(service.findById(id), HttpStatus.OK)
     }
 }

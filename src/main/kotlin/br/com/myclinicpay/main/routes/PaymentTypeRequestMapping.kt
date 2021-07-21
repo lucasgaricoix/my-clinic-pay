@@ -28,7 +28,7 @@ class PaymentTypeRequestMapping {
         return FindPaymentTypeById().build().handle(requestEntity)
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     fun deleteById(requestEntity: RequestEntity<PaymentType>) : ResponseEntity<PaymentType> {
         return DeletePaymentType().build().handle(requestEntity)
     }

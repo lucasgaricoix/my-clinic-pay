@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository
 class FindAllPaymentTypesRepository : FindAllPaymentTypeRepository {
     private val collectionName = "payment_type"
     override fun findAllPaymentType(): List<PaymentType> {
-        val mongoTemplate = Connection.getConnection()
+        val mongoTemplate = Connection.getTemplate()
         val query = Query()
 
         return mongoTemplate.find(query, PaymentTypeEntity::class.java, collectionName)
