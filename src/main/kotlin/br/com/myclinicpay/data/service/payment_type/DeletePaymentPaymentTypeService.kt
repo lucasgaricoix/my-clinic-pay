@@ -1,7 +1,7 @@
 package br.com.myclinicpay.data.service.payment_type
 
 import br.com.myclinicpay.data.usecases.payment_type.DeletePaymentTypeByIdRepository
-import br.com.myclinicpay.domain.usecases.payment.DeletePaymentTypeById
+import br.com.myclinicpay.domain.usecases.payment_type.DeletePaymentTypeById
 import org.springframework.stereotype.Service
 
 @Service

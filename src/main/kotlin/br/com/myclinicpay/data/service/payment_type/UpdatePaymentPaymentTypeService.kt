@@ -2,7 +2,7 @@ package br.com.myclinicpay.data.service.payment_type
 
 import br.com.myclinicpay.data.usecases.payment_type.UpdatePaymentTypeRepository
 import br.com.myclinicpay.domain.model.payment_type.PaymentType
-import br.com.myclinicpay.domain.usecases.payment.UpdatePaymentType
+import br.com.myclinicpay.domain.usecases.payment_type.UpdatePaymentType
 import org.springframework.stereotype.Service
 
 @Service
