@@ -24,7 +24,6 @@ class CreatePersonRepository : CreatePersonRepository {
             ObjectId.get(),
             person.name,
             person.birthDate,
-            person.age,
             ResponsibleEntity(
                 ObjectId.get(),
                 person.responsible.name
@@ -37,7 +36,6 @@ class CreatePersonRepository : CreatePersonRepository {
             personEntity.id.toString(),
             personEntity.name,
             personEntity.birthDate,
-            personEntity.age,
             Responsible(
                 personEntity.responsible.id.toString(),
                 personEntity.responsible.name

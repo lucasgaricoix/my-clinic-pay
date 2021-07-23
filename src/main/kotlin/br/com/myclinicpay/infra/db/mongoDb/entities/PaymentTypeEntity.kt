@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 data class PaymentTypeEntity(
     @Id
     val id: ObjectId?,
+    val type: String,
     val description: String,
     val value: Double
 )

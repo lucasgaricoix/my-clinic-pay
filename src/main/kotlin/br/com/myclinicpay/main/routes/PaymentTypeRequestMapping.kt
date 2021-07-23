@@ -1,10 +1,7 @@
 package br.com.myclinicpay.main.routes
 
 import br.com.myclinicpay.domain.model.payment_type.PaymentType
-import br.com.myclinicpay.presentation.factories.payment_type.CreatePaymentType
-import br.com.myclinicpay.presentation.factories.payment_type.DeletePaymentType
-import br.com.myclinicpay.presentation.factories.payment_type.FindAllPaymentType
-import br.com.myclinicpay.presentation.factories.payment_type.FindPaymentTypeById
+import br.com.myclinicpay.presentation.factories.payment_type.*
 import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -18,9 +15,19 @@ class PaymentTypeRequestMapping {
         return CreatePaymentType().build().handle(requestEntity)
     }
 
+    @PutMapping
+    fun update(requestEntity: RequestEntity<PaymentType>) : ResponseEntity<String> {
+        return UpdatePaymentType().build().handle(requestEntity)
+    }
+
     @GetMapping
     fun findAll(requestEntity: RequestEntity<PaymentType>) : ResponseEntity<List<PaymentType>> {
         return FindAllPaymentType().build().handle(requestEntity)
+    }
+
+    @GetMapping("/search")
+    fun findAllByType(requestEntity: RequestEntity<PaymentType>) : ResponseEntity<List<PaymentType>> {
+        return FindAllPaymentType().buildByType().handle(requestEntity)
     }
 
     @GetMapping("/{id}")

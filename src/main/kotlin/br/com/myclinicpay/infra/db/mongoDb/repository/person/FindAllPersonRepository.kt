@@ -24,7 +24,6 @@ class FindAllPersonRepository : FindAllPersonRepository {
             personEntity.id.toString(),
             personEntity.name,
             personEntity.birthDate,
-            personEntity.age,
             Responsible(
                 personEntity.responsible.id.toString(),
                 personEntity.responsible.name

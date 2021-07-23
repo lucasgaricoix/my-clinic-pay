@@ -14,6 +14,5 @@ data class PersonEntity(
     val id: ObjectId? = ObjectId.get(),
     val name: String,
     val birthDate: LocalDate,
-    val age: Int,
     val responsible: ResponsibleEntity
 )
