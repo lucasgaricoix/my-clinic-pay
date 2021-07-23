@@ -1,7 +1,7 @@
 package br.com.myclinicpay.main.routes
 
 import br.com.myclinicpay.domain.model.payment_type.PaymentType
-import br.com.myclinicpay.presentation.factories.payment_type.*
+import br.com.myclinicpay.presentation.factories.payment.type.*
 import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
