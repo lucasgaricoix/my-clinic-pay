@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/payment/type")
+@RequestMapping("/payments/types")
 class PaymentTypeRequestMapping {
 
     @PostMapping
@@ -16,27 +16,30 @@ class PaymentTypeRequestMapping {
     }
 
     @PutMapping
-    fun update(requestEntity: RequestEntity<PaymentType>) : ResponseEntity<String> {
+    fun update(requestEntity: RequestEntity<PaymentType>): ResponseEntity<String> {
         return UpdatePaymentType().build().handle(requestEntity)
     }
 
     @GetMapping
-    fun findAll(requestEntity: RequestEntity<PaymentType>) : ResponseEntity<List<PaymentType>> {
+    fun findAll(requestEntity: RequestEntity<PaymentType>): ResponseEntity<List<PaymentType>> {
         return FindAllPaymentType().build().handle(requestEntity)
     }
 
     @GetMapping("/search")
-    fun findAllByType(requestEntity: RequestEntity<PaymentType>) : ResponseEntity<List<PaymentType>> {
-        return FindAllPaymentType().buildByType().handle(requestEntity)
+    fun findAllByType(
+        @RequestParam(name = "description") description: String,
+        @RequestParam(name = "type") type: String
+    ): ResponseEntity<List<PaymentType>> {
+        return FindAllPaymentType().buildByType().handle(description, type)
     }
 
     @GetMapping("/{id}")
-    fun findById(requestEntity: RequestEntity<PaymentType>) : ResponseEntity<PaymentType> {
+    fun findById(requestEntity: RequestEntity<PaymentType>): ResponseEntity<PaymentType> {
         return FindPaymentTypeById().build().handle(requestEntity)
     }
 
     @DeleteMapping("/{id}")
-    fun deleteById(requestEntity: RequestEntity<PaymentType>) : ResponseEntity<PaymentType> {
+    fun deleteById(requestEntity: RequestEntity<PaymentType>): ResponseEntity<PaymentType> {
         return DeletePaymentType().build().handle(requestEntity)
     }
 }

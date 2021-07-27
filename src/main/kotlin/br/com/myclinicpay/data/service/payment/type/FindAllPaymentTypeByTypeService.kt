@@ -8,8 +8,7 @@ import org.springframework.stereotype.Service
 @Service
 class FindAllPaymentTypeByTypeService(private val repository: FindAllPaymentTypeByTypeRepository) :
     FindAllPaymentTypeByType {
-    override fun findAllByType(query: String): List<PaymentType> {
-        val splitQuery = query.split("=").last()
-        return repository.findAllByType(splitQuery)
+    override fun findAllByType(description: String, type: String): List<PaymentType> {
+        return repository.findAllByType(description, type)
     }
 }

@@ -5,16 +5,13 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDate
 
-@Document("income")
-class IncomeEntity(
+@Document("expense")
+class ExpenseEntity(
     @Id
     val id: ObjectId,
     val date: LocalDate,
+    val dueDate: LocalDate = LocalDate.now(),
+    val paymnetDate: LocalDate = LocalDate.now(),
     val paymentType: PaymentTypeEntity,
     val description: String,
-    val sessionNumber: Int,
-    val isPaid: Boolean,
-    val isPartial: Boolean = false,
-    val isAbsence: Boolean = false,
-    val person: PersonEntity
 )

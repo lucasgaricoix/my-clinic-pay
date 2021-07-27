@@ -18,14 +18,16 @@ import org.springframework.web.client.HttpServerErrorException
 
 @Repository
 class CreateIncomeRepository : CreateIncomeRepository {
-    private val collectionName = "income"
-    override fun create(income: Income, paymentType: PaymentType, person: Person): Income {
+    override fun create(income: Income, paymentType: PaymentType, person: Person, nextSession: Int): Income {
         try {
             val mongoTemplate = Connection.getTemplate()
-            val created = mongoTemplate.save<IncomeEntity>(toEntity(income, paymentType, person), collectionName)
+            val created = mongoTemplate.save<IncomeEntity>(toEntity(income, paymentType, person, nextSession), "income")
             return toDomainModel(created)
         } catch (error: Exception) {
-            throw HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Não foi possível persistir o pagament\n$error")
+            throw HttpServerErrorException(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Não foi possível persistir o pagament\n$error"
+            )
         }
     }
 
@@ -42,7 +44,7 @@ class CreateIncomeRepository : CreateIncomeRepository {
             incomeEntity.description,
             incomeEntity.sessionNumber,
             incomeEntity.isPaid,
-            incomeEntity.isHalfValue,
+            incomeEntity.isPartial,
             incomeEntity.isAbsence,
             Person(
                 incomeEntity.person.id.toString(),
@@ -59,7 +61,8 @@ class CreateIncomeRepository : CreateIncomeRepository {
     private fun toEntity(
         income: Income,
         paymentType: PaymentType,
-        person: Person
+        person: Person,
+        lastSession: Int
     ): IncomeEntity {
         return IncomeEntity(
             ObjectId.get(),
@@ -71,9 +74,9 @@ class CreateIncomeRepository : CreateIncomeRepository {
                 paymentType.value
             ),
             income.description,
-            income.sessionNumber,
+            lastSession,
             income.isPaid,
-            income.isHalfValue,
+            income.isPartial,
             income.isAbsence,
             PersonEntity(
                 ObjectId(person.id),

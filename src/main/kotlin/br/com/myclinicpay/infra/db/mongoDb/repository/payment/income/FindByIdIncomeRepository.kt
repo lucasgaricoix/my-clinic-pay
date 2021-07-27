@@ -40,7 +40,7 @@ class FindByIdIncomeRepository : FindByIdIncomeRepository {
             incomeEntity.description,
             incomeEntity.sessionNumber,
             incomeEntity.isPaid,
-            incomeEntity.isHalfValue,
+            incomeEntity.isPartial,
             incomeEntity.isAbsence,
             Person(
                 incomeEntity.person.id.toString(),

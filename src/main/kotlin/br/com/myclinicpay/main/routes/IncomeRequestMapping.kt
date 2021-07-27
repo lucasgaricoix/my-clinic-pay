@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/income")
+@RequestMapping("/incomes")
 class IncomeRequestMapping {
     @PostMapping
     fun create(requestEntity: RequestEntity<Income>): ResponseEntity<Income> {

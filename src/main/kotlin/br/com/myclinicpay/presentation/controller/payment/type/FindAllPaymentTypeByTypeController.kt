@@ -9,10 +9,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 
 @Controller
-class FindAllPaymentTypeByTypeController(private val service: FindAllPaymentTypeByType) :
-    ControllerInterface<PaymentType, List<PaymentType>> {
-    override fun handle(request: RequestEntity<PaymentType>): ResponseEntity<List<PaymentType>> {
-        val query = request.url.query
-        return ResponseEntity(service.findAllByType(query), HttpStatus.OK)
+class FindAllPaymentTypeByTypeController(private val service: FindAllPaymentTypeByType) {
+    fun handle(description: String, type: String): ResponseEntity<List<PaymentType>> {
+        return ResponseEntity(service.findAllByType(description, type), HttpStatus.OK)
     }
 }

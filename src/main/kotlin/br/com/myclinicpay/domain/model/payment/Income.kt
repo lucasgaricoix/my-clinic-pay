@@ -11,7 +11,7 @@ class Income(
     override var description: String,
     val sessionNumber: Int,
     val isPaid: Boolean = false,
-    val isHalfValue: Boolean = false,
+    val isPartial: Boolean = false,
     val isAbsence: Boolean = false,
     val person: Person
 ) : Payment()

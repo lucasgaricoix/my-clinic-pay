@@ -31,7 +31,7 @@ class FindAllIncomeRepository : FindAllIncomeRepository {
             incomeEntity.description,
             incomeEntity.sessionNumber,
             incomeEntity.isPaid,
-            incomeEntity.isHalfValue,
+            incomeEntity.isPartial,
             incomeEntity.isAbsence,
             Person(
                 incomeEntity.person.id.toString(),

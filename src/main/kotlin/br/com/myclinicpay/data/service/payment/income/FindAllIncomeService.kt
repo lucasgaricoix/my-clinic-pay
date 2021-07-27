@@ -6,7 +6,7 @@ import br.com.myclinicpay.domain.usecases.payment.income.FindAllIncome
 import org.springframework.stereotype.Service
 
 @Service
-class FindAllIncomeService(private val repository: FindAllIncomeRepository) : FindAllIncome  {
+class FindAllIncomeService(private val repository: FindAllIncomeRepository) : FindAllIncome {
     override fun findAll(): List<Income> {
         return repository.findAll()
     }

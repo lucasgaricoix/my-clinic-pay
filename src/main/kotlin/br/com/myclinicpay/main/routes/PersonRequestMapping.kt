@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("person")
+@RequestMapping("persons")
 class PersonRequestMapping {
     @PostMapping
     fun create(requestEntity: RequestEntity<Person>): ResponseEntity<Person> {
