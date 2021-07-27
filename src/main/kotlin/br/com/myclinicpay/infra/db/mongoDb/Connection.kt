@@ -25,7 +25,7 @@ class Connection {
         }
 
         fun getTemplate(): MongoTemplate {
-            return MongoTemplate(getConnection()!!, "myclinicpay")
+            return MongoTemplate(getConnection()!!, "my-clinic-pay")
         }
     }
 }
