@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -cp target/classes:target/dependency/* br.com.myclinicpay.MyclinicpayApplicationKt
+web: java -jar myclinicpay-0.0.1-SNAPSHOT.jar
