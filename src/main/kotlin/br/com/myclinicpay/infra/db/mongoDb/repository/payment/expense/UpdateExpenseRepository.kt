@@ -3,13 +3,10 @@ package br.com.myclinicpay.infra.db.mongoDb.repository.payment.expense
 import br.com.myclinicpay.data.usecases.payment.expense.UpdateExpenseRepository
 import br.com.myclinicpay.domain.model.payment.Expense
 import br.com.myclinicpay.infra.db.mongoDb.Connection
-import br.com.myclinicpay.infra.db.mongoDb.entities.ExpenseEntity
-import org.bson.Document
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
 import org.springframework.data.mongodb.core.query.isEqualTo
-import org.springframework.data.mongodb.core.update
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Repository
 import org.springframework.web.client.HttpServerErrorException

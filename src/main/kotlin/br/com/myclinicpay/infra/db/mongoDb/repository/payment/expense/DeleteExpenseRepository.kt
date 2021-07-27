@@ -1,7 +1,6 @@
 package br.com.myclinicpay.infra.db.mongoDb.repository.payment.expense
 
 import br.com.myclinicpay.data.usecases.payment.expense.DeleteExpenseRepository
-import br.com.myclinicpay.data.usecases.payment.income.DeleteIncomeRepository
 import br.com.myclinicpay.infra.db.mongoDb.Connection
 import org.bson.Document
 import org.bson.types.ObjectId
