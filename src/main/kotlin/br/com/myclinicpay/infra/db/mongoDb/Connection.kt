@@ -10,7 +10,7 @@ class Connection {
     companion object MongoConnection {
         var connectionInstance : MongoClient? = null
         private fun connect() {
-            val connectionString = ConnectionString("mongodb://lgaricoix:010133@localhost:27017/myclinicpay")
+            val connectionString = ConnectionString("mongodb+srv://lgaricoix:010133@cluster0.42jwu.mongodb.net/my-clinic-pay?retryWrites=true&w=majority")
             val mongoClientSettings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .build()
