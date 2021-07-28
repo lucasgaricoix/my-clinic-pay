@@ -10,7 +10,7 @@ class Connection {
     companion object MongoConnection {
         var connectionInstance : MongoClient? = null
         private fun connect() {
-            val connectionString = ConnectionString("mongodb+srv://lgaricoix:010133@cluster0.42jwu.mongodb.net/my-clinic-pay?retryWrites=true&w=majority")
+            val connectionString = ConnectionString("mongodb+srv://lgaricoix:010133@cluster0.42jwu.mongodb.net/my-clinic-pay-dev?retryWrites=true&w=majority")
             val mongoClientSettings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .build()
@@ -25,7 +25,7 @@ class Connection {
         }
 
         fun getTemplate(): MongoTemplate {
-            return MongoTemplate(getConnection()!!, "my-clinic-pay")
+            return MongoTemplate(getConnection()!!, "my-clinic-pay-dev")
         }
     }
 }

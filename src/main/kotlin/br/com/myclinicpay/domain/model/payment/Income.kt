@@ -9,7 +9,7 @@ class Income(
     override var date: LocalDate,
     override var paymentType: PaymentType,
     override var description: String,
-    val sessionNumber: Int,
+    val sessionNumber: Int?,
     val isPaid: Boolean = false,
     val isPartial: Boolean = false,
     val isAbsence: Boolean = false,

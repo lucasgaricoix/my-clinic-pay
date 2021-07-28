@@ -1,10 +1,7 @@
 package br.com.myclinicpay.main.routes
 
 import br.com.myclinicpay.domain.model.person.Person
-import br.com.myclinicpay.presentation.factories.person.CreatePerson
-import br.com.myclinicpay.presentation.factories.person.DeletePerson
-import br.com.myclinicpay.presentation.factories.person.FindAllPerson
-import br.com.myclinicpay.presentation.factories.person.FindPersonById
+import br.com.myclinicpay.presentation.factories.person.*
 import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -20,6 +17,11 @@ class PersonRequestMapping {
     @DeleteMapping("/{id}")
     fun deleteById(requestEntity: RequestEntity<Person>) : ResponseEntity<Person> {
         return DeletePerson().build().handle(requestEntity)
+    }
+
+    @PutMapping
+    fun update(@RequestBody person: Person): ResponseEntity<String> {
+        return UpdatePerson().build().handle(person)
     }
 
     @GetMapping
