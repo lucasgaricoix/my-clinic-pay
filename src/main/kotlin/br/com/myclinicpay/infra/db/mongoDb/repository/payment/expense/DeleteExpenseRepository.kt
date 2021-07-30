@@ -21,6 +21,7 @@ class DeleteExpenseRepository : DeleteExpenseRepository {
                     "Não foi possível encontrar a despesa para remover."
                 )
             }
+            mongoTemplate.getCollection("payment").deleteOne(Document("_id", ObjectId(id)))
         } catch (error: Exception) {
             throw HttpServerErrorException(
                 HttpStatus.INTERNAL_SERVER_ERROR,

@@ -1,25 +1,21 @@
-version: '3.1'
+version: '3.9'
 
 services:
   mongo:
-    image: mongo
+    image: mongo:latest
     restart: always
-    container_name: myclinicpay
     environment:
       MONGO_INITDB_DATABASE: myclinicpay
-      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_USERNAME: lgaricoix
       MONGO_INITDB_ROOT_PASSWORD: 010133
     ports:
       - 27017:27017
     volumes:
-      - ./init-mongodb.js:/docker-entrypoint-initdb.d/init-mongodb.js:ro
       - ./mongo-volume:/data/db
-
-  mongo-express:
-    image: mongo-express
-    restart: always
+  my-clinic-pay:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: my-clinic-pay:latest
     ports:
-      - 8087:8087
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: 010133
+      - 8082:8082

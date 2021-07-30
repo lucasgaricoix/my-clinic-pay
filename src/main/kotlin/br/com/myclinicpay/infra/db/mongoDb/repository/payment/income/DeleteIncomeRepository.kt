@@ -15,12 +15,13 @@ class DeleteIncomeRepository : DeleteIncomeRepository {
             val mongoTemplate = Connection.getTemplate()
             val mongoCollection = mongoTemplate.getCollection("income")
             val deleted = mongoCollection.deleteOne(Document("_id", ObjectId(id)))
-            if (!deleted.wasAcknowledged()) {
+            if (deleted.deletedCount <= 0) {
                 throw HttpServerErrorException(
                     HttpStatus.NOT_FOUND,
                     "Não foi possível encontrar o pagamento para remover."
                 )
             }
+            mongoTemplate.getCollection("payment").deleteOne(Document("_id", ObjectId(id)))
         } catch (error: Exception) {
             throw HttpServerErrorException(
                 HttpStatus.INTERNAL_SERVER_ERROR,

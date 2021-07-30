@@ -1,16 +1,14 @@
 package br.com.myclinicpay.infra.db.mongoDb.repository.payment.income
 
 import br.com.myclinicpay.data.usecases.payment.income.CreateIncomeRepository
+import br.com.myclinicpay.domain.model.payment.Expense
 import br.com.myclinicpay.domain.model.payment.Income
 import br.com.myclinicpay.domain.model.payment_type.PaymentType
 import br.com.myclinicpay.domain.model.payment_type.TypeEnum
 import br.com.myclinicpay.domain.model.person.Person
 import br.com.myclinicpay.domain.model.person.Responsible
 import br.com.myclinicpay.infra.db.mongoDb.Connection
-import br.com.myclinicpay.infra.db.mongoDb.entities.IncomeEntity
-import br.com.myclinicpay.infra.db.mongoDb.entities.PaymentTypeEntity
-import br.com.myclinicpay.infra.db.mongoDb.entities.PersonEntity
-import br.com.myclinicpay.infra.db.mongoDb.entities.ResponsibleEntity
+import br.com.myclinicpay.infra.db.mongoDb.entities.*
 import org.bson.types.ObjectId
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Repository
@@ -22,6 +20,7 @@ class CreateIncomeRepository : CreateIncomeRepository {
         try {
             val mongoTemplate = Connection.getTemplate()
             val created = mongoTemplate.save<IncomeEntity>(toEntity(income, paymentType, person, nextSession), "income")
+            mongoTemplate.save(toPaymentEntity(created, paymentType))
             return toDomainModel(created)
         } catch (error: Exception) {
             throw HttpServerErrorException(
@@ -87,6 +86,23 @@ class CreateIncomeRepository : CreateIncomeRepository {
                     person.responsible.name
                 )
             ),
+        )
+    }
+
+    private fun toPaymentEntity(
+        income: IncomeEntity,
+        paymentType: PaymentType
+    ): PaymentEntity {
+        return PaymentEntity(
+            income.id,
+            income.date,
+            PaymentTypeEntity(
+                ObjectId(paymentType.id),
+                paymentType.type.value,
+                paymentType.description,
+                paymentType.value
+            ),
+            income.description
         )
     }
 }
