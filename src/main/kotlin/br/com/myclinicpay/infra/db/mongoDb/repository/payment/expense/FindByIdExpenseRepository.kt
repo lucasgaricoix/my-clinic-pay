@@ -31,7 +31,7 @@ class FindByIdExpenseRepository :
             expenseEntity.id.toString(),
             expenseEntity.date,
             expenseEntity.dueDate,
-            expenseEntity.paymnetDate,
+            expenseEntity.paymentDate,
             PaymentType(
                 expenseEntity.paymentType.id.toString(),
                 TypeEnum.valueOf(expenseEntity.paymentType.type),

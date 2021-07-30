@@ -24,6 +24,11 @@ class CreateIncomeService(
         val initialRange = LocalDate.of(LocalDate.now().year, LocalDate.now().month, 1)
         val finalRange = LocalDate.of(LocalDate.now().year, LocalDate.now().month, lastDayMonth)
         val nextSession = findAllBySessionIdIncomeRepository.findAll(initialRange, finalRange)
-        return createExpenseRepository.create(income, paymentType, person, nextSession)
+
+        if (income.sessionNumber == null) {
+            return createExpenseRepository.create(income, paymentType, person, nextSession)
+        }
+
+        return createExpenseRepository.create(income, paymentType, person, income.sessionNumber)
     }
 }
