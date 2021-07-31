@@ -6,14 +6,29 @@ import br.com.myclinicpay.domain.model.payment_type.PaymentType
 import br.com.myclinicpay.domain.model.payment_type.TypeEnum
 import br.com.myclinicpay.infra.db.mongoDb.Connection
 import br.com.myclinicpay.infra.db.mongoDb.entities.ExpenseEntity
+import br.com.myclinicpay.infra.db.mongoDb.entities.IncomeEntity
+import org.springframework.data.mongodb.core.aggregate
+import org.springframework.data.mongodb.core.aggregation.Aggregation
 import org.springframework.data.mongodb.core.findAll
+import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.stereotype.Repository
 
 @Repository
 class FindAllExpenseRepository : FindAllExpenseRepository {
-    override fun findAll(): List<Expense> {
+    override fun findAll(month: Int): List<Expense> {
         val mongoTemplate = Connection.getTemplate()
-        return mongoTemplate.findAll<ExpenseEntity>("expense").map { toDomainModel(it) }.toList()
+
+        val projection = Aggregation.project("id")
+            .and("date").`as`("date")
+            .and("dueDate").`as`("dueDate")
+            .and("paymentDate").`as`("paymentDate")
+            .and("paymentType").`as`("paymentType")
+            .and("description").`as`("description")
+            .andExpression("month(date)").`as`("month")
+
+        val match = Aggregation.match(Criteria.where("month").`is`(month))
+        val data = mongoTemplate.aggregate<ExpenseEntity>(Aggregation.newAggregation(projection, match), "expense")
+        return data.mappedResults.toList().map { toDomainModel(it) }
     }
 
     private fun toDomainModel(expenseEntity: ExpenseEntity): Expense {
