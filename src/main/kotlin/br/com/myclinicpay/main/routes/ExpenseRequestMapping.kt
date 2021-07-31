@@ -19,8 +19,8 @@ class ExpenseRequestMapping {
     }
 
     @GetMapping
-    fun findAll(): ResponseEntity<List<Expense>> {
-        return ExpenseBuilder().findAll().handle()
+    fun findAll(@RequestParam(name = "month") month: Int): ResponseEntity<List<Expense>> {
+        return ExpenseBuilder().findAll().handle(month)
     }
 
     @GetMapping("/{id}")

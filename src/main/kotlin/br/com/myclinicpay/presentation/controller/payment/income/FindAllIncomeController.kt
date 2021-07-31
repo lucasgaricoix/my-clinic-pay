@@ -9,8 +9,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 
 @Controller
-class FindAllIncomeController(private val service: FindAllIncome) : ControllerInterface<Income, List<Income>> {
-    override fun handle(request: RequestEntity<Income>): ResponseEntity<List<Income>> {
-        return ResponseEntity(service.findAll(), HttpStatus.OK)
+class FindAllIncomeController(private val service: FindAllIncome) {
+    fun handle(search: Int): ResponseEntity<List<Income>> {
+        return ResponseEntity(service.findAll(search), HttpStatus.OK)
     }
 }

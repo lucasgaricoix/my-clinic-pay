@@ -8,14 +8,32 @@ import br.com.myclinicpay.domain.model.person.Person
 import br.com.myclinicpay.domain.model.person.Responsible
 import br.com.myclinicpay.infra.db.mongoDb.Connection
 import br.com.myclinicpay.infra.db.mongoDb.entities.IncomeEntity
-import org.springframework.data.mongodb.core.findAll
+import org.springframework.data.mongodb.core.aggregate
+import org.springframework.data.mongodb.core.aggregation.Aggregation
+import org.springframework.data.mongodb.core.find
+import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.Query
+import org.springframework.data.mongodb.core.query.isEqualTo
 import org.springframework.stereotype.Repository
 
 @Repository
 class FindAllIncomeRepository : FindAllIncomeRepository {
-    override fun findAll(): List<Income> {
+    override fun findAll(search: Int): List<Income> {
         val mongoTemplate = Connection.getTemplate()
-        return mongoTemplate.findAll<IncomeEntity>("income").map { toDomainModel(it) }.toList()
+        val projection = Aggregation.project("id")
+            .and("date").`as`("date")
+            .and("paymentType").`as`("paymentType")
+            .and("description").`as`("description")
+            .and("sessionNumber").`as`("sessionNumber")
+            .and("isPaid").`as`("isPaid")
+            .and("isPartial").`as`("isPartial")
+            .and("isAbsence").`as`("isAbsence")
+            .and("person").`as`("person")
+            .andExpression("month(date)").`as`("month")
+
+        val match = Aggregation.match(Criteria.where("month").`is`(search))
+        val data = mongoTemplate.aggregate<IncomeEntity>(Aggregation.newAggregation(projection, match), "income")
+        return data.mappedResults.toList().map { toDomainModel(it) }
     }
 
     private fun toDomainModel(incomeEntity: IncomeEntity): Income {

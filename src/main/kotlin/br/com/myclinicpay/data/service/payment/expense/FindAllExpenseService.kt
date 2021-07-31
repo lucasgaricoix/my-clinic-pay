@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class FindAllExpenseService(private val repository: FindAllExpenseRepository) : FindAllExpense  {
-    override fun findAll(): List<Expense> {
-        return repository.findAll()
+    override fun findAll(month: Int): List<Expense> {
+        return repository.findAll(month)
     }
 }
