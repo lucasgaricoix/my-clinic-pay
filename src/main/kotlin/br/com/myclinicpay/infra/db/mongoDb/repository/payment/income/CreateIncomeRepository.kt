@@ -63,6 +63,15 @@ class CreateIncomeRepository : CreateIncomeRepository {
         person: Person,
         lastSession: Int
     ): IncomeEntity {
+        var value = paymentType.value
+        if (income.isPartial) {
+            value = paymentType.value / 2
+        }
+
+        if (income.isAbsence) {
+            value = 0.0
+        }
+
         return IncomeEntity(
             ObjectId.get(),
             income.date,
@@ -70,7 +79,7 @@ class CreateIncomeRepository : CreateIncomeRepository {
                 ObjectId(paymentType.id),
                 paymentType.type.value,
                 paymentType.description,
-                paymentType.value
+                value
             ),
             income.description,
             lastSession,
