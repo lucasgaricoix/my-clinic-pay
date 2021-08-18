@@ -19,6 +19,7 @@ class FindAllPaymentOverMonthService(
         val paymentOverMonthList: MutableList<PaymentOverMonth> = ArrayList()
 
         payments.map { PaymentOverMonthData(it.paymentType.type, it.date.month, it.paymentType.value) }
+            .sortedBy { it.month }
             .forEach { payment ->
                 if (payment.type == "income") {
                     paymentOverMonthList.add(PaymentOverMonth(payment.month.name, payment.value, 0.0, 0.0))
@@ -30,9 +31,10 @@ class FindAllPaymentOverMonthService(
         val result = paymentOverMonthList.groupingBy { it.month }.reduce { key, acc, element ->
             val income = acc.income.plus(element.income)
             val expense = acc.expense.plus(element.expense)
-            PaymentOverMonth(key, income, expense, income.plus(expense))
+            val total = acc.income.plus(element.income).plus(acc.expense.plus(element.expense))
+            PaymentOverMonth(key, income, expense, total)
         }
 
-        return result.map { PaymentOverMonth(it.value.month, it.value.income, it.value.expense, it.value.expense) }
+        return result.map { PaymentOverMonth(it.value.month, it.value.income, it.value.expense, it.value.amount) }
     }
 }
