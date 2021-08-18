@@ -1,8 +1,9 @@
 package br.com.myclinicpay.main.routes
 
 import br.com.myclinicpay.domain.model.payment.Income
+import br.com.myclinicpay.domain.model.payment.IncomeByPatient
+import br.com.myclinicpay.domain.model.payment.PayIncomeById
 import br.com.myclinicpay.presentation.factories.payment.income.*
-import org.springframework.data.repository.query.Param
 import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -33,5 +34,15 @@ class IncomeRequestMapping {
     @GetMapping("/search")
     fun findAll(@RequestParam(name = "month") search: Int): ResponseEntity<List<Income>> {
         return FindAllIncome().build().handle(search)
+    }
+
+    @GetMapping("/by-patients")
+    fun findAllByPatient(@RequestParam(name = "month") month: Int): ResponseEntity<List<IncomeByPatient>> {
+        return FindAllIncome().allByPatient().handle(month)
+    }
+
+    @PutMapping("/pay")
+    fun payById(@RequestBody payIncomeById: PayIncomeById): ResponseEntity<String> {
+        return UpdateIncome().buildPayById().handle(payIncomeById.id)
     }
 }
