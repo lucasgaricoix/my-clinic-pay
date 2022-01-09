@@ -33,4 +33,9 @@ class PersonRequestMapping {
     fun findById(requestEntity: RequestEntity<Person>) : ResponseEntity<Person> {
         return FindPersonById().build().handle(requestEntity)
     }
+
+    @GetMapping("/search")
+    fun search(@RequestParam(name = "name") search: String): ResponseEntity<List<Person>> {
+        return SearchPerson().build().handle(search)
+    }
 }
