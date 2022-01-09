@@ -1,7 +1,6 @@
 package br.com.myclinicpay.infra.db.mongoDb.repository.payment.income
 
 import br.com.myclinicpay.data.usecases.payment.income.CreateIncomeRepository
-import br.com.myclinicpay.domain.model.payment.Expense
 import br.com.myclinicpay.domain.model.payment.Income
 import br.com.myclinicpay.domain.model.payment_type.PaymentType
 import br.com.myclinicpay.domain.model.payment_type.TypeEnum
