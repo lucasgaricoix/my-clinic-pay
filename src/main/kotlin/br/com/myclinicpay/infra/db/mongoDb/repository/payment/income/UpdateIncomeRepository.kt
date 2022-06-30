@@ -30,9 +30,7 @@ class UpdateIncomeRepository : UpdateIncomeRepository {
                 .set("person", income.person)
 
             val updated = mongoTemplate.updateFirst(query, toUpdate, collectionName)
-            if (updated.modifiedCount <= 0) {
-                throw HttpServerErrorException(HttpStatus.BAD_REQUEST, "Nenhum dado foi atualizado.")
-            }
+
             return updated.upsertedId.toString()
         } catch (error: Exception) {
             throw HttpServerErrorException(
