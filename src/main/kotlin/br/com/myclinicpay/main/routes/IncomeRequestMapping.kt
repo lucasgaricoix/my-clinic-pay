@@ -32,13 +32,19 @@ class IncomeRequestMapping {
     }
 
     @GetMapping("/search")
-    fun findAll(@RequestParam(name = "month") search: Int): ResponseEntity<List<Income>> {
-        return FindAllIncome().build().handle(search)
+    fun findAll(
+        @RequestParam(name = "month") month: Int,
+        @RequestParam(name = "year") year: Int
+    ): ResponseEntity<List<Income>> {
+        return FindAllIncome().build().handle(month, year)
     }
 
     @GetMapping("/by-patients")
-    fun findAllByPatient(@RequestParam(name = "month") month: Int): ResponseEntity<List<IncomeByPatient>> {
-        return FindAllIncome().allByPatient().handle(month)
+    fun findAllByPatient(
+        @RequestParam(name = "month") month: Int,
+        @RequestParam(name = "year") year: Int
+    ): ResponseEntity<List<IncomeByPatient>> {
+        return FindAllIncome().allByPatient().handle(month, year)
     }
 
     @PutMapping("/pay")

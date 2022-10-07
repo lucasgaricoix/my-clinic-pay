@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller
 
 @Controller
 class FindAllIncomeByPatientController(private val service: FindAllIncomeByPatient) {
-    fun handle(month: Int): ResponseEntity<List<IncomeByPatient>> {
-        return ResponseEntity(service.find(month), HttpStatus.OK)
+    fun handle(month: Int, year: Int): ResponseEntity<List<IncomeByPatient>> {
+        return ResponseEntity(service.find(month, year), HttpStatus.OK)
     }
 }

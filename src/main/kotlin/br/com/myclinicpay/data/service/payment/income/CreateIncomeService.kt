@@ -29,6 +29,10 @@ class CreateIncomeService(
             return createExpenseRepository.create(income, paymentType, person, nextSession)
         }
 
+        if (income.person.name.isBlank()) {
+            throw Exception("Person not found.")
+        }
+
         return createExpenseRepository.create(income, paymentType, person, income.sessionNumber)
     }
 }

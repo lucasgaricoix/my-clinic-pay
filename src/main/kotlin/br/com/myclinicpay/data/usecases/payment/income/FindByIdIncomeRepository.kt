@@ -1,7 +1,7 @@
 package br.com.myclinicpay.data.usecases.payment.income
 
-import br.com.myclinicpay.domain.model.payment.Income
+import br.com.myclinicpay.infra.db.mongoDb.entities.IncomeEntity
 
 interface FindByIdIncomeRepository {
-    fun findById(id: String) : Income
+    fun findById(id: String) : IncomeEntity
 }
