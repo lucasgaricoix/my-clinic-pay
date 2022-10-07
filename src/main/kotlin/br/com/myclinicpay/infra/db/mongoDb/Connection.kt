@@ -30,7 +30,8 @@ class Connection {
             if (tenantHolder.getTenant() != null) {
                 instanceString = instanceString.append("-").append(tenantHolder.getTenant().toString())
             }
-            return MongoTemplate(connectionInstance!!, instanceString.toString())
+            // instanceString.toString()
+            return MongoTemplate(connectionInstance!!, "my-clinic-pay")
         }
 
     }
