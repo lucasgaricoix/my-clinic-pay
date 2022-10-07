@@ -7,7 +7,7 @@ import br.com.myclinicpay.infra.db.mongoDb.entities.UserEntity
 import org.springframework.stereotype.Service
 
 @Service
-class UserService(private val userRepository: UserRepository): UserContract {
+class UserService(private val userRepository: UserRepository) : UserContract {
     override fun createUser(user: User): User {
         val createdUser = userRepository.createUser(user)
         return adapter(createdUser)
