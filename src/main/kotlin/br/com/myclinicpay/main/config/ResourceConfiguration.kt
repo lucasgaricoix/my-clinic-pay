@@ -15,7 +15,7 @@ class ResourceConfiguration(
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://localhost:3000", "https://myclinicpay.vercel.app")
+            .allowedOrigins("http://localhost:3000", "https://myclinicpay.vercel.app", "https://myclinicpay.vercel.app/")
             .allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH")
             .allowedHeaders("*")
     }
