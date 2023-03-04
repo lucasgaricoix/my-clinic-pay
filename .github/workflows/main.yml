@@ -6,7 +6,6 @@ on:
 
 env:
   AWS_REGION: sa_east_1
-  CONTAINER_NAME: myclinicpay
 
 jobs:
   deploy:
@@ -34,13 +33,12 @@ jobs:
         uses: easingthemes/ssh-deploy@v4.1.8
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-          SOURCE: "./build/libs ./run.sh"
+          SOURCE: "./build/libs ./run.sh ./Caddyfile"
           REMOTE_HOST: "ec2-15-228-101-0.sa-east-1.compute.amazonaws.com"
           REMOTE_USER: "ec2-user"
           TARGET: "/home/ec2-user/server"
           SCRIPT_AFTER: |
-            ls
+            pwd
             cd server
             sudo chmod +x ./run.sh
-            sudo ./run.sh
             echo $RSYNC_STDOUT
