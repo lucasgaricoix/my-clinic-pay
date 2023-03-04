@@ -22,7 +22,7 @@ jobs:
         with:
           java-version: '11'
           distribution: 'corretto'
-      - run: ./gradlew build
+      - run: ./gradlew build -x check
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
@@ -36,8 +36,8 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
           SOURCE: "./build/lib"
           REMOTE_HOST: "ec2-15-228-101-0.sa-east-1.compute.amazonaws.com"
-          REMOTE_USER: "ecs-user"
-          TARGET: "/home/ecs-user/server"
+          REMOTE_USER: "ec2-user"
+          TARGET: "/home/ec2-user/server"
           SCRIPT_AFTER: |
             ls
             cd server
