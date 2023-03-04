@@ -34,7 +34,7 @@ jobs:
         uses: easingthemes/ssh-deploy@v4.1.8
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-          SOURCE: "./build/libs" "./run.sh"
+          SOURCE: "./build/libs ./run.sh"
           REMOTE_HOST: "ec2-15-228-101-0.sa-east-1.compute.amazonaws.com"
           REMOTE_USER: "ec2-user"
           TARGET: "/home/ec2-user/server"
