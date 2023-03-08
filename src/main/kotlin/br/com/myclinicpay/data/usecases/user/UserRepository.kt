@@ -5,4 +5,6 @@ import br.com.myclinicpay.infra.db.mongoDb.entities.UserEntity
 
 interface UserRepository {
     fun createUser(user: User): UserEntity
+
+    fun findByEmail(email: String): List<UserEntity>
 }

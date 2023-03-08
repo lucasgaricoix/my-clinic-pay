@@ -1,11 +1,12 @@
 package br.com.myclinicpay.domain.model.appointment
 
-import br.com.myclinicpay.domain.model.person.Person
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class Appointment(
-    val patient: Person,
+    val patientId: String,
+    val user: String,
+    val at: LocalDateTime,
     val duration: Int,
-    val at: LocalDate,
+    val type: AppointmentType,
     val description: String?
 )

@@ -16,9 +16,7 @@ class UserRepository : UserRepository {
 
     override fun createUser(user: User): UserEntity {
         val mongodbTemplate = Connection.getTemplate()
-        val query = Query(Criteria.where("email").`is`(user.email))
-
-        val userExists = mongodbTemplate.find<UserEntity>(query, collectionName)
+        val userExists = findByEmail(user.email)
 
         if (userExists.isEmpty()) {
             val userEntity = UserEntity(
@@ -32,5 +30,11 @@ class UserRepository : UserRepository {
         }
 
         return userExists.first()
+    }
+
+    override fun findByEmail(email: String): List<UserEntity> {
+        val mongodbTemplate = Connection.getTemplate()
+        val query = Query(Criteria.where("email").`is`(email))
+        return mongodbTemplate.find(query, collectionName)
     }
 }
