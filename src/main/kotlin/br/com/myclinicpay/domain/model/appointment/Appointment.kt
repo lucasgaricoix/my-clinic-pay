@@ -7,6 +7,6 @@ data class Appointment(
     val user: String,
     val at: LocalDateTime,
     val duration: Int,
-    val type: AppointmentType,
+    val appointmentType: AppointmentType,
     val description: String?
 )

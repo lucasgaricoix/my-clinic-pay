@@ -1,8 +1,6 @@
-package br.com.myclinicpay.domain.model.appointment
+package br.com.myclinicpay.infra.db.mongoDb.entities
 
-import com.fasterxml.jackson.annotation.JsonValue
-
-enum class AppointmentType(@JsonValue val type: String) {
+enum class AppointmentTypeEntity(val type: String) {
     SCHEDULE("schedule"),
     CONFIRMED("confirmed"),
     ABSENCE("absence"),

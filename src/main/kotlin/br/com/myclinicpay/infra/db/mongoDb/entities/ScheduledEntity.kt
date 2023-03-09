@@ -1,12 +1,13 @@
 package br.com.myclinicpay.infra.db.mongoDb.entities
 
-import br.com.myclinicpay.domain.model.appointment.AppointmentType
+import com.fasterxml.jackson.annotation.JsonFormat
 import java.time.LocalDateTime
 
 class ScheduledEntity(
-    val at: LocalDateTime = LocalDateTime.now(),
+    @JsonFormat(timezone = "GMT-3")
+    val at: LocalDateTime,
     val duration: Int,
     val patient: PersonEntity,
-    val type: AppointmentType,
+    val appointmentType: String,
     val description: String?
 )
