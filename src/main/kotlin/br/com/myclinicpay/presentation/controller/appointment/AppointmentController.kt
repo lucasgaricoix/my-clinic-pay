@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Controller
 class AppointmentController(private val appointmentService: AppointmentService) {
@@ -17,7 +17,7 @@ class AppointmentController(private val appointmentService: AppointmentService) 
         return ResponseEntity(appointmentService.createOrUpdate(body), HttpStatus.CREATED)
     }
 
-    fun findAppointmentByDateAndUser(date: LocalDate, userId: String): ResponseEntity<AppointmentEntity> {
+    fun findAppointmentByDateAndUser(date: LocalDateTime, userId: String): ResponseEntity<AppointmentEntity> {
         return ResponseEntity(appointmentService.findByDateAndUserId(date, userId), HttpStatus.OK)
     }
 }

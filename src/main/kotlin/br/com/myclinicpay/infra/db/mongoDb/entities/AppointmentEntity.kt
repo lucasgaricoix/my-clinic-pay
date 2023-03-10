@@ -5,8 +5,6 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
 
 @Document("appointment")
 class AppointmentEntity(
@@ -14,5 +12,6 @@ class AppointmentEntity(
     val id: ObjectId?,
     val user: UserEntity,
     val date: LocalDate,
-    val scheduled: MutableList<ScheduledEntity>,
+    val schedule: MutableList<ScheduleEntity>,
+    val unavailableSchedule: MutableList<LocalDateTime>
 )

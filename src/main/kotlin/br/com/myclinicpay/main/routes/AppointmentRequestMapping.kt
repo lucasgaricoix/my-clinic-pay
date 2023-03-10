@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/appointments")
@@ -26,7 +27,7 @@ class AppointmentRequestMapping {
     @GetMapping("/{userId}")
     fun findAppointmentByUserAndDate(
         @PathVariable userId: String,
-        @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam(name = "date") date: LocalDate
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam(name = "date") date: LocalDateTime
     ): ResponseEntity<AppointmentEntity> {
         return AppointmentFactory().build().findAppointmentByDateAndUser(date, userId)
     }

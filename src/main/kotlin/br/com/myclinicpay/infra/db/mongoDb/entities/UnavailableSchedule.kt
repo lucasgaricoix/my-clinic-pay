@@ -3,11 +3,9 @@ package br.com.myclinicpay.infra.db.mongoDb.entities
 import com.fasterxml.jackson.annotation.JsonFormat
 import java.time.LocalDateTime
 
-class ScheduledEntity(
+data class UnavailableSchedule(
     @JsonFormat(timezone = "GMT-3")
-    val at: LocalDateTime,
-    val duration: Int,
-    val patient: PersonEntity,
-    val appointmentType: String,
-    val description: String?
+    val start: LocalDateTime,
+    @JsonFormat(timezone = "GMT-3")
+    val end: LocalDateTime
 )

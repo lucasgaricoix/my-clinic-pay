@@ -10,7 +10,6 @@ import org.bson.types.ObjectId
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpServerErrorException
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Service
@@ -30,24 +29,26 @@ class AppointmentService(
         val appointmentExists = appointmentRepository.findByDateAndUserId(adaptedAppointment.date, appointment.userId)
             ?: return appointmentRepository.create(adaptedAppointment).id.toString()
 
-        val sameAppointment = appointmentExists.scheduled.find { it.at == appointment.at }
+        val sameAppointment = appointmentExists.schedule.find { it.start == appointment.at }
 
         if (sameAppointment != null) {
             throw HttpServerErrorException(HttpStatus.NOT_ACCEPTABLE, "Já existe um mesmo agendamento")
         }
 
-        appointmentExists.scheduled.addAll(adaptedAppointment.scheduled)
+        appointmentExists.schedule.addAll(adaptedAppointment.schedule)
+        appointmentExists.unavailableSchedule.addAll(adaptedAppointment.unavailableSchedule)
 
-        appointmentRepository.updateScheduledEntityById(appointmentExists.id, appointmentExists.scheduled)
+        appointmentRepository.updateScheduledEntityById(appointmentExists.id, appointmentExists)
 
         return appointmentExists.id.toString()
     }
 
-    override fun findByDateAndUserId(date: LocalDate, userId: String): AppointmentEntity {
-        val appointment = appointmentRepository.findByDateAndUserId(date, userId)
+    override fun findByDateAndUserId(date: LocalDateTime, userId: String): AppointmentEntity {
+        val zonedTime = date.minusHours(timeZoneOffset).toLocalDate()
+        val appointment = appointmentRepository.findByDateAndUserId(zonedTime, userId)
             ?: throw HttpServerErrorException(HttpStatus.NOT_FOUND, "Não foi possível encontrar uma agenda")
 
-        appointment.scheduled.sortBy { it.at }
+        appointment.schedule.sortBy { it.start }
 
         return appointment
     }
@@ -57,19 +58,24 @@ class AppointmentService(
         userEntity: UserEntity,
         appointment: Appointment
     ): AppointmentEntity {
-
+        val zonedTime = appointment.at.minusHours(timeZoneOffset)
         return AppointmentEntity(
             ObjectId.get(),
             userEntity,
-            appointment.at.minusHours(timeZoneOffset).toLocalDate(),
+            zonedTime.toLocalDate(),
             mutableListOf(
-                ScheduledEntity(
-                    appointment.at.minusHours(timeZoneOffset),
+                ScheduleEntity(
+                    zonedTime,
+                    zonedTime.plusMinutes(appointment.duration.toLong()),
                     appointment.duration,
                     personEntity,
                     enumValueOf<AppointmentTypeEntity>(appointment.appointmentType.name).type,
                     appointment.description
                 )
+            ),
+            mutableListOf(
+                zonedTime,
+                zonedTime.plusMinutes(appointment.duration.toLong())
             )
         )
     }

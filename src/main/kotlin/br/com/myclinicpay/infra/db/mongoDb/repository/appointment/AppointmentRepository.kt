@@ -3,7 +3,6 @@ package br.com.myclinicpay.infra.db.mongoDb.repository.appointment
 import br.com.myclinicpay.data.usecases.appointment.AppointmentRepository
 import br.com.myclinicpay.infra.db.mongoDb.Connection
 import br.com.myclinicpay.infra.db.mongoDb.entities.AppointmentEntity
-import br.com.myclinicpay.infra.db.mongoDb.entities.ScheduledEntity
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.findOne
 import org.springframework.data.mongodb.core.query.Criteria
@@ -36,10 +35,15 @@ class AppointmentRepository : AppointmentRepository {
         return mongodbTemplate.findOne(query)
     }
 
-    override fun updateScheduledEntityById(id: ObjectId?, scheduled: MutableList<ScheduledEntity>): String {
+    override fun updateScheduledEntityById(
+        id: ObjectId?,
+        appointmentEntity: AppointmentEntity
+    ): String {
         val mongodbTemplate = Connection.getTemplate()
         val updateQuery = Query(Criteria.where("_id").isEqualTo(id))
-        val toUpdate = Update().set("scheduled", scheduled)
+        val toUpdate = Update()
+            .set("schedule", appointmentEntity.schedule)
+            .set("unavailableSchedule", appointmentEntity.unavailableSchedule)
         val updated = mongodbTemplate.updateFirst<AppointmentEntity>(updateQuery, toUpdate, collectionName)
 
         if (updated.modifiedCount <= 0) {
