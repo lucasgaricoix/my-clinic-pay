@@ -74,8 +74,10 @@ class AppointmentService(
                 )
             ),
             mutableListOf(
-                zonedTime,
-                zonedTime.plusMinutes(appointment.duration.toLong())
+                UnavailableSchedule(
+                    zonedTime,
+                    zonedTime.plusMinutes(appointment.duration.toLong())
+                )
             )
         )
     }
