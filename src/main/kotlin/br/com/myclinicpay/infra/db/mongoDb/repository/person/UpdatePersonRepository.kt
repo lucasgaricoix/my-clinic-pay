@@ -14,14 +14,14 @@ import org.springframework.web.client.HttpServerErrorException
 class UpdatePersonRepository : UpdatePersonRepository {
     private val collectionName = "person"
     override fun udpate(person: Person): String {
-        val mongoTemplate = Connection.getTemplate()
+        val mongodbTemplate = Connection.getTemplate()
         val query = Query(Criteria.where("_id").isEqualTo(ObjectId(person.id)))
         val toUpdate = Update()
             .set("name", person.name)
             .set("birthDate", person.birthDate)
             .set("responsible", person.responsible)
 
-        val updated = mongoTemplate.updateFirst(query, toUpdate, collectionName)
+        val updated = mongodbTemplate.updateFirst(query, toUpdate, collectionName)
         if (updated.modifiedCount <= 0) {
             throw HttpServerErrorException(HttpStatus.BAD_REQUEST, "Não houve modificação.")
         }

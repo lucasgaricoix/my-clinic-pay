@@ -14,7 +14,7 @@ class Connection {
         private const val DB_PREFIX = "my-clinic-pay"
 
         private var connectionInstance: MongoClient? = null
-        var tenantHolder = TenantHolder()
+        private var tenantHolder = TenantHolder()
 
         fun setConnection(connection: MongoClientSettings, tenantId: String?) {
             connectionInstance = MongoClients.create(connection)
