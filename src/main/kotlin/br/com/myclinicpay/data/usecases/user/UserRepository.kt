@@ -7,4 +7,6 @@ interface UserRepository {
     fun createUser(user: User): UserEntity
 
     fun findByEmail(email: String): List<UserEntity>
+
+    fun findById(id: String): UserEntity?
 }

@@ -3,11 +3,8 @@ package br.com.myclinicpay.infra.db.mongoDb.repository.appointment
 import br.com.myclinicpay.data.usecases.appointment.AppointmentRepository
 import br.com.myclinicpay.infra.db.mongoDb.Connection
 import br.com.myclinicpay.infra.db.mongoDb.entities.AppointmentEntity
-import br.com.myclinicpay.infra.db.mongoDb.entities.AppointmentTypeEntity
 import br.com.myclinicpay.infra.db.mongoDb.entities.ScheduledEntity
 import org.bson.types.ObjectId
-import org.springframework.data.mongodb.core.find
-import org.springframework.data.mongodb.core.findById
 import org.springframework.data.mongodb.core.findOne
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
@@ -18,7 +15,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Repository
 import org.springframework.web.client.HttpServerErrorException
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 @Repository
 class AppointmentRepository : AppointmentRepository {
@@ -28,13 +24,13 @@ class AppointmentRepository : AppointmentRepository {
         return mongodbTemplate.save(appointmentEntity, collectionName)
     }
 
-    override fun findByDateAndUser(date: LocalDate, name: String): AppointmentEntity? {
+    override fun findByDateAndUserId(date: LocalDate, userId: String): AppointmentEntity? {
         val mongodbTemplate = Connection.getTemplate()
         val query = Query(
             Criteria.where("date")
                 .isEqualTo(date)
-                .and("user")
-                .isEqualTo(name)
+                .and("user._id")
+                .isEqualTo(userId)
         )
 
         return mongodbTemplate.findOne(query)
@@ -47,7 +43,7 @@ class AppointmentRepository : AppointmentRepository {
         val updated = mongodbTemplate.updateFirst<AppointmentEntity>(updateQuery, toUpdate, collectionName)
 
         if (updated.modifiedCount <= 0) {
-            throw HttpServerErrorException(HttpStatus.NOT_MODIFIED, "Appointment not updated")
+            throw HttpServerErrorException(HttpStatus.NOT_MODIFIED, "Não foi possível modificar o agendamento")
         }
 
         return id.toString()

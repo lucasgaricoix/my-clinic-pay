@@ -6,8 +6,10 @@ import br.com.myclinicpay.infra.db.mongoDb.Connection
 import br.com.myclinicpay.infra.db.mongoDb.entities.UserEntity
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.find
+import org.springframework.data.mongodb.core.findOne
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
+import org.springframework.data.mongodb.core.query.isEqualTo
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -36,5 +38,11 @@ class UserRepository : UserRepository {
         val mongodbTemplate = Connection.getTemplate()
         val query = Query(Criteria.where("email").`is`(email))
         return mongodbTemplate.find(query, collectionName)
+    }
+
+    override fun findById(id: String): UserEntity? {
+        val mongodbTemplate = Connection.getTemplate()
+        val query = Query(Criteria.where("_id").isEqualTo(id))
+        return mongodbTemplate.findOne(query, collectionName)
     }
 }
