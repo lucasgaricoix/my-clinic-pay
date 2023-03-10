@@ -26,18 +26,14 @@ class AppointmentRepository : AppointmentRepository {
     override fun findByDateAndUserId(date: LocalDate, userId: String): AppointmentEntity? {
         val mongodbTemplate = Connection.getTemplate()
         val query = Query(
-            Criteria.where("date")
-                .isEqualTo(date)
-                .and("user._id")
-                .isEqualTo(userId)
+            Criteria.where("date").isEqualTo(date).and("user._id").isEqualTo(userId)
         )
 
         return mongodbTemplate.findOne(query)
     }
 
     override fun updateScheduledEntityById(
-        id: ObjectId?,
-        appointmentEntity: AppointmentEntity
+        id: ObjectId?, appointmentEntity: AppointmentEntity
     ): String {
         val mongodbTemplate = Connection.getTemplate()
         val updateQuery = Query(Criteria.where("_id").isEqualTo(id))

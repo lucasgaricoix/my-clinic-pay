@@ -21,8 +21,9 @@ class AppointmentService(
     private val timeZoneOffset = 3L
     override fun createOrUpdate(appointment: Appointment): String {
         val personEntity = findPersonByIdRepository.findEntityById(appointment.patientId)
-        val userEntity = userRepository.findById(appointment.userId)
-            ?: throw HttpServerErrorException(HttpStatus.NOT_FOUND, "Usuário não encontrado")
+        val userEntity = userRepository.findById(appointment.userId) ?: throw HttpServerErrorException(
+            HttpStatus.NOT_FOUND, "Usuário não encontrado"
+        )
 
         val adaptedAppointment = toEntity(personEntity, userEntity, appointment)
 
@@ -54,16 +55,11 @@ class AppointmentService(
     }
 
     private fun toEntity(
-        personEntity: PersonEntity,
-        userEntity: UserEntity,
-        appointment: Appointment
+        personEntity: PersonEntity, userEntity: UserEntity, appointment: Appointment
     ): AppointmentEntity {
         val zonedTime = appointment.at.minusHours(timeZoneOffset)
         return AppointmentEntity(
-            ObjectId.get(),
-            userEntity,
-            zonedTime.toLocalDate(),
-            mutableListOf(
+            ObjectId.get(), userEntity, zonedTime.toLocalDate(), mutableListOf(
                 ScheduleEntity(
                     zonedTime,
                     zonedTime.plusMinutes(appointment.duration.toLong()),
@@ -72,11 +68,9 @@ class AppointmentService(
                     enumValueOf<AppointmentTypeEntity>(appointment.appointmentType.name).type,
                     appointment.description
                 )
-            ),
-            mutableListOf(
+            ), mutableListOf(
                 UnavailableScheduleEntity(
-                    zonedTime,
-                    zonedTime.plusMinutes(appointment.duration.toLong())
+                    zonedTime, zonedTime.plusMinutes(appointment.duration.toLong())
                 )
             )
         )
