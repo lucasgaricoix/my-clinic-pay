@@ -12,5 +12,5 @@ class AppointmentEntity(
     val user: UserEntity,
     val date: LocalDate,
     val schedule: MutableList<ScheduleEntity>,
-    val unavailableSchedule: MutableList<UnavailableSchedule>
+    val unavailableSchedule: MutableList<UnavailableScheduleEntity>
 )
