@@ -20,6 +20,12 @@ class FindPersonByIdRepository : FindPersonByIdRepository {
         return adapter(personEntity)
     }
 
+    override fun findEntityById(id: String): PersonEntity {
+        val mongodbTemplate = Connection.getTemplate()
+        return mongodbTemplate.findById<PersonEntity>(ObjectId(id), collectionName)
+            ?: throw Exception("Não foi possível encontrar a pessoa com o id $id")
+    }
+
     private fun adapter(personEntity: PersonEntity): Person {
         return Person(
             personEntity.id.toString(),
