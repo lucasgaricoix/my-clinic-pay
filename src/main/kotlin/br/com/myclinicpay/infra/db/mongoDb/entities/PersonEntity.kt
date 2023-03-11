@@ -11,5 +11,6 @@ data class PersonEntity(
     val id: ObjectId? = ObjectId.get(),
     val name: String,
     val birthDate: LocalDate,
-    val responsible: ResponsibleEntity
+    val responsible: ResponsibleEntity,
+    val paymentType: PaymentTypeEntity?
 )

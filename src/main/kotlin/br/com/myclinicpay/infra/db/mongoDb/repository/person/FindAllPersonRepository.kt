@@ -1,6 +1,8 @@
 package br.com.myclinicpay.infra.db.mongoDb.repository.person
 
 import br.com.myclinicpay.data.usecases.person.FindAllPersonRepository
+import br.com.myclinicpay.domain.model.payment_type.PaymentType
+import br.com.myclinicpay.domain.model.payment_type.TypeEnum
 import br.com.myclinicpay.domain.model.person.Person
 import br.com.myclinicpay.domain.model.person.Responsible
 import br.com.myclinicpay.infra.db.mongoDb.Connection
@@ -37,7 +39,15 @@ class FindAllPersonRepository : FindAllPersonRepository {
             Responsible(
                 personEntity.responsible.id.toString(),
                 personEntity.responsible.name
-            )
+            ),
+            personEntity.paymentType?.let {
+                PaymentType(
+                    it.id.toString(),
+                    TypeEnum.valueOf(it.type.uppercase()),
+                    it.description,
+                    it.value
+                )
+            }
         )
     }
 }

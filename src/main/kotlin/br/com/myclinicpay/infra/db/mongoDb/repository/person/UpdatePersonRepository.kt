@@ -13,13 +13,14 @@ import org.springframework.web.client.HttpServerErrorException
 
 class UpdatePersonRepository : UpdatePersonRepository {
     private val collectionName = "person"
-    override fun udpate(person: Person): String {
+    override fun update(person: Person): String {
         val mongodbTemplate = Connection.getTemplate()
         val query = Query(Criteria.where("_id").isEqualTo(ObjectId(person.id)))
         val toUpdate = Update()
             .set("name", person.name)
             .set("birthDate", person.birthDate)
             .set("responsible", person.responsible)
+            .set("paymentType", person.paymentType)
 
         val updated = mongodbTemplate.updateFirst(query, toUpdate, collectionName)
         if (updated.modifiedCount <= 0) {

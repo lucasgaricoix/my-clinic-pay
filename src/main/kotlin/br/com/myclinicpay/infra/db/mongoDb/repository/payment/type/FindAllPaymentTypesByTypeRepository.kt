@@ -14,12 +14,12 @@ import org.springframework.stereotype.Repository
 class FindAllPaymentTypesByTypeRepository : FindAllPaymentTypeByTypeRepository {
     private val collectionName = "payment_type"
     override fun findAllByType(description: String, type: String): List<PaymentType> {
-        val mongoTemplate = Connection.getTemplate()
+        val mongodbTemplate = Connection.getTemplate()
         val documentQuery = Query(
-            Criteria.where("type").isEqualTo(type)
+            Criteria.where("type").isEqualTo(type).and("description").regex(description, "i")
         )
 
-        return mongoTemplate.find(documentQuery, PaymentTypeEntity::class.java, collectionName)
+        return mongodbTemplate.find(documentQuery, PaymentTypeEntity::class.java, collectionName)
             .map { adapter(it) }
             .toList()
     }

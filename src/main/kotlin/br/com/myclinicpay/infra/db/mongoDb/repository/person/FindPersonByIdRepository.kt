@@ -1,6 +1,8 @@
 package br.com.myclinicpay.infra.db.mongoDb.repository.person
 
 import br.com.myclinicpay.data.usecases.person.FindPersonByIdRepository
+import br.com.myclinicpay.domain.model.payment_type.PaymentType
+import br.com.myclinicpay.domain.model.payment_type.TypeEnum
 import br.com.myclinicpay.domain.model.person.Person
 import br.com.myclinicpay.domain.model.person.Responsible
 import br.com.myclinicpay.infra.db.mongoDb.Connection
@@ -8,7 +10,6 @@ import br.com.myclinicpay.infra.db.mongoDb.entities.PersonEntity
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.findById
 import org.springframework.stereotype.Repository
-import java.lang.Exception
 
 @Repository
 class FindPersonByIdRepository : FindPersonByIdRepository {
@@ -34,7 +35,15 @@ class FindPersonByIdRepository : FindPersonByIdRepository {
             Responsible(
                 personEntity.responsible.id.toString(),
                 personEntity.responsible.name
-            )
+            ),
+            personEntity.paymentType?.let {
+                PaymentType(
+                    it.id.toString(),
+                    TypeEnum.valueOf(it.type.uppercase()),
+                    it.description,
+                    it.value
+                )
+            }
         )
     }
 }

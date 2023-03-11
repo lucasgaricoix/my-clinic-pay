@@ -51,7 +51,13 @@ class CreateIncomeRepository : CreateIncomeRepository {
                 Responsible(
                     incomeEntity.person.responsible.id.toString(),
                     incomeEntity.person.responsible.name
-                )
+                ),
+                PaymentType(
+                    incomeEntity.paymentType.id.toString(),
+                    TypeEnum.valueOf(incomeEntity.paymentType.type.uppercase()),
+                    incomeEntity.paymentType.description,
+                    incomeEntity.paymentType.value
+                ),
             )
         )
     }
@@ -92,7 +98,15 @@ class CreateIncomeRepository : CreateIncomeRepository {
                 ResponsibleEntity(
                     ObjectId(person.responsible.id),
                     person.responsible.name
-                )
+                ),
+                person.paymentType?.let {
+                    PaymentTypeEntity(
+                        ObjectId(it.id),
+                        it.type.value,
+                        it.description,
+                        it.value
+                    )
+                }
             ),
         )
     }
