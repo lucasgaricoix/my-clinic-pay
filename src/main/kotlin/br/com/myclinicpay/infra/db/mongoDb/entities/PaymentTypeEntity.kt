@@ -10,5 +10,13 @@ data class PaymentTypeEntity(
     val id: ObjectId?,
     val type: String,
     val description: String,
-    val value: Double
-)
+    val value: Double,
+    val color: String?
+) {
+    constructor(
+        id: ObjectId?,
+        type: String,
+        description: String,
+        value: Double,
+    ) : this(id, type, description, value, null)
+}

@@ -11,9 +11,15 @@ import org.springframework.stereotype.Repository
 class CreatePaymentTypeRepository : CreatePaymentTypeRepository {
     val collectionName = "payment_type"
     override fun save(paymentType: PaymentType): PaymentType {
-        val mongoTemplate = Connection.getTemplate()
-        val typeValue = PaymentTypeEntity(null, paymentType.type.value, paymentType.description, paymentType.value)
-        val createdTypeValue = mongoTemplate.save(typeValue, collectionName)
+        val mongodbTemplate = Connection.getTemplate()
+        val typeValue = PaymentTypeEntity(
+            null,
+            paymentType.type.value,
+            paymentType.description,
+            paymentType.value,
+            paymentType.color
+        )
+        val createdTypeValue = mongodbTemplate.save(typeValue, collectionName)
         return adapter(createdTypeValue)
     }
 
@@ -22,7 +28,8 @@ class CreatePaymentTypeRepository : CreatePaymentTypeRepository {
             paymentTypeEntity.id.toString(),
             TypeEnum.valueOf(paymentTypeEntity.type.uppercase()),
             paymentTypeEntity.description,
-            paymentTypeEntity.value
+            paymentTypeEntity.value,
+            paymentTypeEntity.color
         )
     }
 }
