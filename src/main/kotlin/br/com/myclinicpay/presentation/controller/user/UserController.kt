@@ -12,4 +12,9 @@ class UserController(private val userService: UserContract) {
         val userData = userService.createUser(user)
         return ResponseEntity<User>(userData, HttpStatus.CREATED)
     }
+
+    fun updateUser(user: User): ResponseEntity<User> {
+        val userData = userService.updateUser(user)
+        return ResponseEntity<User>(userData, HttpStatus.OK)
+    }
 }
