@@ -18,9 +18,42 @@ class UserEntity(
     val password: String,
     val picture: String,
     val role: String,
-    val settings: SettingsEntity
+    val settings: SettingsEntity?
 ) {
+
+    constructor(
+        id: ObjectId?,
+        name: String,
+        email: String,
+        password: String,
+        picture: String,
+        role: String,
+    ) : this(
+        id, name, email, password, picture, role, null
+    )
+
     fun toModel(): User {
+        if (this.settings != null) {
+            return User(
+                this.id.toString(),
+                this.name,
+                this.email,
+                this.password,
+                this.picture,
+                this.role,
+                Settings(
+                    Schedule(
+                        this.settings.schedule.rules.map { rule ->
+                            ScheduleRules(
+                                rule.name,
+                                rule.intervals.map { Interval(it.from, it.to) })
+                        }
+                    )
+                ),
+                this.id.toString()
+            )
+        }
+
         return User(
             this.id.toString(),
             this.name,
@@ -28,16 +61,7 @@ class UserEntity(
             this.password,
             this.picture,
             this.role,
-            Settings(
-                Schedule(
-                    this.settings.schedule.rules.map { rule ->
-                        ScheduleRules(
-                            rule.name,
-                            rule.intervals.map { Interval(it.from, it.to) })
-                    }
-                )
-            ),
-            this.id.toString()
         )
+
     }
 }

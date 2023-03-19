@@ -18,7 +18,6 @@ import org.springframework.web.client.HttpServerErrorException
 @Repository
 class UserRepository : UserRepository {
     private val collectionName = "user"
-    private val mongodbTemplate = Connection.getTemplate()
 
     override fun createUser(user: User): UserEntity {
         val mongodbTemplate = Connection.getTemplate()
@@ -32,6 +31,7 @@ class UserRepository : UserRepository {
     }
 
     override fun updateUser(user: User): UserEntity {
+        val mongodbTemplate = Connection.getTemplate()
         val query = Query(Criteria.where("email").isEqualTo(user.email))
         val userEntity = user.toEntity()
         val toUpdate = Update().set("name", userEntity.name)

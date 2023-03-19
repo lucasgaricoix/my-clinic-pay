@@ -6,5 +6,5 @@ import org.springframework.data.annotation.Id
 data class ScheduleSettingsEntity(
     @Id
     val id: ObjectId,
-    val rules: List<ScheduleRulesEntity>
+    val rules: List<ScheduleRulesEntity> = listOf()
 )

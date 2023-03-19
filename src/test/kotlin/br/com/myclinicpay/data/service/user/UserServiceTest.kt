@@ -15,9 +15,6 @@ import org.mockito.kotlin.whenever
 
 class UserServiceTest {
     private val userRepositoryMock = mock<UserRepository>()
-
-    private val user: User? = null
-
     @Test
     fun `update should change results successfully`() {
         val user = this.getUser()
