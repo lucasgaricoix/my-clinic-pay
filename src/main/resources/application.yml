@@ -1,0 +1,6 @@
+server:
+  port: ${PORT:8082}
+
+
+jwt:
+  secret: "m7jaa6IQZyx2PSHOEs3JF6c31TMobW264WrTObnrXyc="

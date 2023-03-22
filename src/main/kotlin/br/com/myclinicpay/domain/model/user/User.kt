@@ -9,8 +9,10 @@ import br.com.myclinicpay.infra.db.mongoDb.entities.ScheduleSettingsEntity
 import br.com.myclinicpay.infra.db.mongoDb.entities.SettingsEntity
 import br.com.myclinicpay.infra.db.mongoDb.entities.UserEntity
 import org.bson.types.ObjectId
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import java.io.Serializable
 
-class User(
+data class User(
     val id: String?,
     val name: String,
     val email: String,
@@ -19,7 +21,7 @@ class User(
     val role: String = "standard",
     val settings: Settings?,
     val tenantId: String? = "default"
-) {
+) : Serializable {
     constructor(
         id: String?,
         name: String,
@@ -35,7 +37,7 @@ class User(
                 ObjectId.get(),
                 this.name,
                 this.email,
-                this.password,
+                this.bCryptPasswordEncoder(),
                 this.picture,
                 this.role,
                 SettingsEntity(
@@ -94,5 +96,9 @@ class User(
             userEntity.picture,
             userEntity.role,
         )
+    }
+
+    private fun bCryptPasswordEncoder(): String {
+        return BCryptPasswordEncoder().encode(this.password)
     }
 }

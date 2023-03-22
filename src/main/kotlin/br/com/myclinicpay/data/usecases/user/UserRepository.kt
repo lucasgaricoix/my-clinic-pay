@@ -8,7 +8,9 @@ interface UserRepository {
 
     fun updateUser(user: User): UserEntity
 
-    fun findByEmail(email: String): List<UserEntity>
+    fun findByEmail(email: String): UserEntity?
 
     fun findById(id: String): UserEntity?
+
+    fun findByName(name: String) : UserEntity?
 }

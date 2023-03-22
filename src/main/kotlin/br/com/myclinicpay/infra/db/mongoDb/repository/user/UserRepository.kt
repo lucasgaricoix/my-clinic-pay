@@ -4,7 +4,6 @@ import br.com.myclinicpay.data.usecases.user.UserRepository
 import br.com.myclinicpay.domain.model.user.User
 import br.com.myclinicpay.infra.db.mongoDb.Connection
 import br.com.myclinicpay.infra.db.mongoDb.entities.UserEntity
-import org.springframework.data.mongodb.core.find
 import org.springframework.data.mongodb.core.findOne
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
@@ -21,13 +20,7 @@ class UserRepository : UserRepository {
 
     override fun createUser(user: User): UserEntity {
         val mongodbTemplate = Connection.getTemplate()
-        val userExists = findByEmail(user.email)
-
-        if (userExists.isEmpty()) {
-            return mongodbTemplate.save<UserEntity>(user.toEntity(), collectionName)
-        }
-
-        return userExists.first()
+        return mongodbTemplate.save<UserEntity>(user.toEntity(), collectionName)
     }
 
     override fun updateUser(user: User): UserEntity {
@@ -50,15 +43,21 @@ class UserRepository : UserRepository {
         return userEntity
     }
 
-    override fun findByEmail(email: String): List<UserEntity> {
+    override fun findByEmail(email: String): UserEntity? {
         val mongodbTemplate = Connection.getTemplate()
         val query = Query(Criteria.where("email").`is`(email))
-        return mongodbTemplate.find(query, collectionName)
+        return mongodbTemplate.findOne(query, collectionName)
     }
 
     override fun findById(id: String): UserEntity? {
         val mongodbTemplate = Connection.getTemplate()
         val query = Query(Criteria.where("_id").isEqualTo(id))
+        return mongodbTemplate.findOne(query, collectionName)
+    }
+
+    override fun findByName(name: String): UserEntity? {
+        val mongodbTemplate = Connection.getTemplate()
+        val query = Query(Criteria.where("name").isEqualTo(name))
         return mongodbTemplate.findOne(query, collectionName)
     }
 }
