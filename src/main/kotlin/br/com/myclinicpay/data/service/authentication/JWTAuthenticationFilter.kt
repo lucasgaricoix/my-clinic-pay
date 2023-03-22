@@ -7,8 +7,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.client.HttpServerErrorException
+import java.util.*
 import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -45,4 +47,26 @@ class JWTAuthenticationFilter(
         val token = jwtUtil.generateToken(userName)
         response.addHeader("Authorization", "Bearer $token")
     }
+
+    override fun unsuccessfulAuthentication(
+        request: HttpServletRequest?,
+        response: HttpServletResponse,
+        failed: AuthenticationException?
+    ) {
+        val error = BadCredentialsError()
+        response.status = error.status
+        response.contentType = "application/json"
+        response.writer.append(error.toString())
+    }
+
+    private data class BadCredentialsError(
+        val timestamp: Long = Date().time,
+        val status: Int = 401,
+        val message: String = "Email or password incorrect",
+    ) {
+        override fun toString(): String {
+            return ObjectMapper().writeValueAsString(this)
+        }
+    }
+
 }

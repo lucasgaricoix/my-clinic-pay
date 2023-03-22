@@ -5,6 +5,8 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.*
 
 @Component
@@ -12,9 +14,9 @@ class JWTUtil {
     @Value("\${jwt.secret}")
     private lateinit var secret: String
 
-    private val expiration: Long = 3600000
+    private val localDate = LocalDate.now().plusDays(1)
 
-    private val date = Date(System.currentTimeMillis() + expiration)
+    private val date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
     fun generateToken(email: String): String {
         return Jwts.builder()
             .setSubject(email)

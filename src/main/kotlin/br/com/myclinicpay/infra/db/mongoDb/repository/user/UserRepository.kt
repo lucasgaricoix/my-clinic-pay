@@ -12,9 +12,11 @@ import org.springframework.data.mongodb.core.query.isEqualTo
 import org.springframework.data.mongodb.core.updateFirst
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.HttpServerErrorException
 
 @Repository
+@Transactional
 class UserRepository : UserRepository {
     private val collectionName = "user"
 

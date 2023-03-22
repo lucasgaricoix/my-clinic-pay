@@ -21,9 +21,10 @@ class JWTAuthorizationFilter(
 
         if (header == null || !header.startsWith("Bearer")) {
             chain.doFilter(request, response)
+            return
         }
 
-        if (header != null && header.startsWith("Bearer")) {
+        if (header.startsWith("Bearer")) {
             val auth = getAuthentication(header)
             SecurityContextHolder.getContext().authentication = auth
             chain.doFilter(request, response)
