@@ -17,10 +17,11 @@ class JWTUtil {
     private val localDate = LocalDate.now().plusDays(1)
 
     private val date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-    fun generateToken(email: String, id: String): String {
+    fun generateToken(email: String, id: String, name: String): String {
         return Jwts.builder()
             .setSubject(email)
             .setId(id)
+            .setAudience(name)
             .setExpiration(date)
             .signWith(Keys.hmacShaKeyFor(secret.toByteArray()))
             .compact()

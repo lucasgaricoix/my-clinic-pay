@@ -4,6 +4,7 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
 class UserDetailsImpl(private val user: User) : UserDetails {
+    private val name = user.name
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
         return mutableListOf<GrantedAuthority>()
     }
@@ -34,5 +35,9 @@ class UserDetailsImpl(private val user: User) : UserDetails {
 
     fun getId(): String {
         return user.tenantId.toString()
+    }
+
+    fun getName(): String {
+        return this.name
     }
 }
