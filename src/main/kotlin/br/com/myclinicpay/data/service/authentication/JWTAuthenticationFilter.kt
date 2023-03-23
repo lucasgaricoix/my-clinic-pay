@@ -24,7 +24,6 @@ class JWTAuthenticationFilter(
         setFilterProcessesUrl("/api/auth/login")
     }
 
-
     override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication {
         try {
             val user = ObjectMapper().readValue(request.inputStream, Credential::class.java)
@@ -43,8 +42,10 @@ class JWTAuthenticationFilter(
         chain: FilterChain?,
         authResult: Authentication
     ) {
-        val userName = (authResult.principal as UserDetailsImpl).username
-        val token = jwtUtil.generateToken(userName)
+        val userDetails = (authResult.principal as UserDetailsImpl)
+        val userName = userDetails.username
+        val id = userDetails.getId()
+        val token = jwtUtil.generateToken(userName, id)
         response.addHeader("Authorization", "Bearer $token")
     }
 

@@ -31,4 +31,8 @@ class UserDetailsImpl(private val user: User) : UserDetails {
     override fun isEnabled(): Boolean {
         return true
     }
+
+    fun getId(): String {
+        return user.tenantId.toString()
+    }
 }
