@@ -26,8 +26,9 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: artifact
+          name: application.tar
           path: application.tar
+          if-no-files-found: error
 
   deploy:
     needs: [build]
@@ -41,8 +42,7 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@v3
         with:
-          name: artifact
-          path: application.tar
+          name: application.tar
 
       - name: Copy artifact via SCP
         uses: appleboy/scp-action@master
