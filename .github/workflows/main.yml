@@ -61,5 +61,6 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.DIGITALOCEAN_KEY }}
           script: tar -xf ~/artifacts/application.tar |
-            chmod +x ~/server/run.sh |
-            ~/server/run.sh
+            systemctl stop myclinic.service |
+            systemctl start myclinic.service |
+            systemctl status myclinic.service
