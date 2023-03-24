@@ -40,7 +40,15 @@ class FindAllIncomeByPatientService(private val repository: FindAllIncomeReposit
                 Responsible(
                     incomeEntity.person.responsible.id.toString(),
                     incomeEntity.person.responsible.name
-                )
+                ),
+                incomeEntity.person.paymentType?.let {
+                    PaymentType(
+                        it.id.toString(),
+                        TypeEnum.valueOf(it.type.uppercase()),
+                        it.description,
+                        it.value
+                    )
+                },
             )
         )
     }

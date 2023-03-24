@@ -6,6 +6,6 @@ import br.com.myclinicpay.domain.usecases.person.UpdatePerson
 
 class UpdatePersonService(private val repository: UpdatePersonRepository) : UpdatePerson {
     override fun update(person: Person): String {
-        return repository.udpate(person)
+        return repository.update(person)
     }
 }

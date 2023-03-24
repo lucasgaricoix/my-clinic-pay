@@ -15,8 +15,8 @@ class FindAllPaymentOverMonthRepository : FindAllPaymentOverMonthRepository {
         initialDate: LocalDate,
         finalDate: LocalDate
     ): List<PaymentEntity> {
-        val mongoTemplate = Connection.getTemplate()
+        val mongodbTemplate = Connection.getTemplate()
         val query = Query(Criteria("date").gte(initialDate).lte(finalDate))
-        return mongoTemplate.find<PaymentEntity>(query, "payment").toList()
+        return mongodbTemplate.find<PaymentEntity>(query, "payment").toList()
     }
 }

@@ -18,23 +18,31 @@ class FindAllPaymentOverMonthService(
         val payments = repository.findAllOverMonth(initialDate, finalDate)
         val paymentOverMonthList: MutableList<PaymentOverMonth> = ArrayList()
 
-        payments.map { PaymentOverMonthData(it.paymentType.type, it.date.month, it.paymentType.value) }
-            .sortedBy { it.month }
+        payments.map { PaymentOverMonthData(it.paymentType.type, it.date.year, it.date.month, it.paymentType.value) }
+            .sortedBy { it.year; it.month }
             .forEach { payment ->
                 if (payment.type == "income") {
-                    paymentOverMonthList.add(PaymentOverMonth(payment.month.name, payment.value, 0.0, 0.0))
+                    paymentOverMonthList.add(PaymentOverMonth(payment.year, payment.month.name, payment.value, 0.0, 0.0))
                 } else {
-                    paymentOverMonthList.add(PaymentOverMonth(payment.month.name, 0.0, payment.value, 0.0))
+                    paymentOverMonthList.add(PaymentOverMonth(payment.year, payment.month.name, 0.0, payment.value, 0.0))
                 }
             }
 
-        val result = paymentOverMonthList.groupingBy { it.month }.reduce { key, acc, element ->
+        val result = paymentOverMonthList.groupingBy { it.year; it.month }.reduce { key, acc, element ->
             val income = acc.income.plus(element.income)
             val expense = acc.expense.plus(element.expense)
             val total = acc.income.plus(element.income).plus(acc.expense.plus(element.expense))
-            PaymentOverMonth(key, income, expense, total)
+            PaymentOverMonth(acc.year, key, income, expense, total)
         }
 
-        return result.map { PaymentOverMonth(it.value.month, it.value.income, it.value.expense, it.value.amount) }
+        return result.map {
+            PaymentOverMonth(
+                it.value.year,
+                it.value.month,
+                it.value.income,
+                it.value.expense,
+                it.value.amount
+            )
+        }.sortedBy { it.year; it.month }
     }
 }
