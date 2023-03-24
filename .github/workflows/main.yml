@@ -26,7 +26,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: application.tar
+          name: my-clinic
           path: application.tar
           if-no-files-found: error
 
@@ -42,7 +42,7 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@v3
         with:
-          name: application.tar
+          name: my-clinic
 
       - name: Copy artifact via SCP
         uses: appleboy/scp-action@master
