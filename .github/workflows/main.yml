@@ -52,6 +52,7 @@ jobs:
           key: ${{ secrets.DIGITALOCEAN_KEY }}
           source: "application.tar"
           target: "~/artifacts"
+          overwrite: true
 
       - name: Start application on server
         uses: appleboy/ssh-action@v0.1.8
