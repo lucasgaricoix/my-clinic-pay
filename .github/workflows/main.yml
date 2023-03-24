@@ -27,7 +27,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: artifact
-          path: build/libs/application.tar
+          path: ./build/libs/application.tar
 
   deploy:
     needs: [build]
@@ -42,7 +42,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: artifact
-          path: build/libs/application.tar
+          path: ./build/libs/application.tar
 
       - name: Copy artifact via SCP
         uses: appleboy/scp-action@master
@@ -50,7 +50,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.DIGITALOCEAN_KEY }}
-          source: "build/libs/application.tar"
+          source: "./build/libs/application.tar"
           target: "artifact"
 
       - name: Start application on server
