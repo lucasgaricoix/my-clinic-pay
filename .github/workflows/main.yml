@@ -1,11 +1,8 @@
-name: Deploy to Amazon EC2
+name: Deploy to Digitalocean Droplet
 
 on:
   push:
     branches: [ "main" ]
-
-env:
-  AWS_REGION: sa_east_1
 
 jobs:
   build:
@@ -23,20 +20,28 @@ jobs:
           distribution: 'corretto'
       - run: ./gradlew build -x check
 
+      - name: Tar files
+        run: tar -cvf application.tar ./build/libs
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: Package
-          path: build/libs
+          name: artifact
+          path: build/libs/application.tar
 
   deploy:
-    name: Deploy to Digitalocean Droplet
+    name: [Production] deploy
     runs-on: ubuntu-latest
     environment: production
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Download Artifact
         uses: actions/download-artifact@v3
+        with:
+          name: artifact
+          path: build/libs/application.tar
 
       - name: Copy artifact via SCP
         uses: appleboy/scp-action@master
@@ -44,15 +49,15 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.DIGITALOCEAN_KEY }}
-          source: "build/libs"
+          source: "build/libs/application.tar"
           target: "artifact"
 
-      - name: executing remote ssh commands using password
+      - name: Start application on server
         uses: appleboy/ssh-action@v0.1.8
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.DIGITALOCEAN_KEY }}
-          script: cd server |
-            chmod +x run.sh |
-            ./run.sh
+          script: tar -xf ~/server/build/libs/application.tar |
+            chmod +x ~/server/run.sh |
+            ~/server/run.sh
