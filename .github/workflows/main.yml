@@ -8,8 +8,8 @@ env:
   AWS_REGION: sa_east_1
 
 jobs:
-  deploy:
-    name: EC2 Deploy
+  build:
+    name: Build Artifact
     runs-on: ubuntu-latest
     environment: production
 
@@ -29,16 +29,30 @@ jobs:
           name: Package
           path: build/libs
 
-      - name: Deploy EC2 instance
-        uses: easingthemes/ssh-deploy@v4.1.8
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-          SOURCE: "./build/libs ./run.sh ./Caddyfile"
-          REMOTE_HOST: "ec2-15-228-101-0.sa-east-1.compute.amazonaws.com"
-          REMOTE_USER: "ec2-user"
-          TARGET: "/home/ec2-user/server"
-          SCRIPT_AFTER: |
-            pwd
-            cd server
-            sudo chmod +x ./run.sh
-            echo $RSYNC_STDOUT
+  deploy:
+    name: Deploy to Digitalocean Droplet
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+
+      - name: Copy artifact via SCP
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.DIGITALOCEAN_KEY }}
+          source: "build/libs"
+          target: "artifact"
+
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.DIGITALOCEAN_KEY }}
+          script: cd server |
+            chmod +x run.sh |
+            ./run.sh
