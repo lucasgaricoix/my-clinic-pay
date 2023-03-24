@@ -30,6 +30,7 @@ jobs:
           path: build/libs/application.tar
 
   deploy:
+    needs: [build]
     name: Production deploy
     runs-on: ubuntu-latest
     environment: production
