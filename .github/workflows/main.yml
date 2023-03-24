@@ -59,6 +59,6 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.DIGITALOCEAN_KEY }}
-          script: tar -xf ~/server/build/libs/application.tar |
+          script: tar -xf ~/artifacts/application.tar |
             chmod +x ~/server/run.sh |
             ~/server/run.sh
