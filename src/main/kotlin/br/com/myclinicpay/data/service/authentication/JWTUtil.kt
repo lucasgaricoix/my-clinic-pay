@@ -4,9 +4,9 @@ import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.ResponseCookie
 import org.springframework.stereotype.Component
-import java.time.LocalDate
-import java.time.ZoneId
+import java.time.*
 import java.util.*
 
 @Component
@@ -38,6 +38,18 @@ class JWTUtil {
         }
 
         return false
+    }
+
+    fun generateRefreshTokenCookie(token: String): ResponseCookie {
+        val duration = LocalDateTime.now().plusMonths(1)
+            .toInstant(
+                ZoneId.of("America/Sao_Paulo").rules.getOffset(Instant.now())
+            )
+        return ResponseCookie.from("refresh-token", token)
+            .path("/api/auth/refresh-token")
+            .maxAge(duration.toEpochMilli())
+            .httpOnly(true)
+            .build()
     }
 
     fun getUserEmail(token: String): String? {

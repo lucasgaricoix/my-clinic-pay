@@ -12,12 +12,22 @@ import javax.servlet.http.HttpServletResponse
 class JWTAuthorizationFilter(
     authenticationManager: AuthenticationManager,
     private var jwtUtil: JWTUtil,
-    private var userService: UserService
+    private var userService: UserService,
+    private var refreshTokenService: RefreshTokenService
 ) : BasicAuthenticationFilter(
     authenticationManager
 ) {
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
         val header = request.getHeader("Authorization")
+        val refreshToken = request.getHeader("Refresh-Token")
+
+        if (refreshToken != null) {
+            val validToken = this.refreshTokenService.validateToken(refreshToken)
+            val auth = getAuthenticationByRefreshToken(validToken.user.email)
+            SecurityContextHolder.getContext().authentication = auth
+            chain.doFilter(request, response)
+            return
+        }
 
         if (header == null || !header.startsWith("Bearer")) {
             chain.doFilter(request, response)
@@ -41,4 +51,10 @@ class JWTAuthorizationFilter(
 
         throw Exception("Auth invalid")
     }
+
+    private fun getAuthenticationByRefreshToken(username: String?): UsernamePasswordAuthenticationToken {
+        val userDetails = userService.loadUserByUsername(username)
+        return UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
+    }
+
 }

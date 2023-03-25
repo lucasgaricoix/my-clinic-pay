@@ -26,22 +26,6 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: artifact
-          path: build/libs/application.tar
-
-  deploy:
-    name: [Production] deploy
-    runs-on: ubuntu-latest
-    environment: production
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Download Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: artifact
-          path: build/libs/application.tar
           name: my-clinic
           path: application.tar
           if-no-files-found: error
@@ -60,24 +44,6 @@ jobs:
         with:
           name: my-clinic
 
-      - name: Copy artifact via SCP
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.DIGITALOCEAN_KEY }}
-          source: "build/libs/application.tar"
-          target: "artifact"
-
-      - name: Start application on server
-        uses: appleboy/ssh-action@v0.1.8
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.DIGITALOCEAN_KEY }}
-          script: tar -xf ~/server/build/libs/application.tar |
-            chmod +x ~/server/run.sh |
-            ~/server/run.sh
       - name: Copy artifact via SCP
         uses: appleboy/scp-action@master
         with:

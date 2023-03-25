@@ -14,6 +14,6 @@ class ResourceConfiguration(
     }
 
     override fun addCorsMappings(registry: CorsRegistry) {
-        registry.addMapping("/**").allowedMethods("*").exposedHeaders("Authorization")
+        registry.addMapping("/**").allowedMethods("*").exposedHeaders("Authorization", "Refresh-token")
     }
 }

@@ -17,11 +17,13 @@ import javax.servlet.http.HttpServletResponse
 
 class JWTAuthenticationFilter(
     authenticationManager: AuthenticationManager,
-    private var jwtUtil: JWTUtil
+    private var jwtUtil: JWTUtil,
+    private var refreshTokenService: RefreshTokenService
 ) : UsernamePasswordAuthenticationFilter() {
     init {
         this.authenticationManager = authenticationManager
         setFilterProcessesUrl("/api/auth/login")
+        setFilterProcessesUrl("/api/auth/refresh-token")
     }
 
     override fun attemptAuthentication(request: HttpServletRequest, response: HttpServletResponse): Authentication {
@@ -45,7 +47,9 @@ class JWTAuthenticationFilter(
         val userDetails = (authResult.principal as UserDetailsImpl)
         val userName = userDetails.username
         val token = jwtUtil.generateToken(userName, userDetails.getId(), userDetails.getName())
+        val refreshToken = refreshTokenService.create(userName)
         response.addHeader("Authorization", "Bearer $token")
+        response.addHeader("Refresh-token", jwtUtil.generateRefreshTokenCookie(refreshToken.token).toString())
     }
 
     override fun unsuccessfulAuthentication(
