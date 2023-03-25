@@ -1,9 +1,6 @@
 package br.com.myclinicpay.main.config
 
-import br.com.myclinicpay.data.service.authentication.JWTAuthenticationFilter
-import br.com.myclinicpay.data.service.authentication.JWTAuthorizationFilter
-import br.com.myclinicpay.data.service.authentication.JWTUtil
-import br.com.myclinicpay.data.service.authentication.RefreshTokenService
+import br.com.myclinicpay.data.service.authentication.*
 import br.com.myclinicpay.data.service.user.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
@@ -38,6 +35,7 @@ class SecurityConfig() : WebSecurityConfigurerAdapter() {
             .authenticated()
 
         http.addFilter(JWTAuthenticationFilter(authenticationManager(), jwtUtil, refreshTokenService))
+        http.addFilter(JWTRefreshTokenFilter(authenticationManager(), jwtUtil, refreshTokenService))
         http.addFilter(JWTAuthorizationFilter(authenticationManager(), jwtUtil, userService, refreshTokenService))
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

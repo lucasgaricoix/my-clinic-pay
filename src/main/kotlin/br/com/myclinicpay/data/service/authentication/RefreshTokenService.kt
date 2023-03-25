@@ -40,7 +40,6 @@ class RefreshTokenService(
     }
 
     override fun validateToken(token: String): RefreshTokenEntity {
-
         val refreshToken = this.refreshTokenRepository.findByToken(token)
             ?: throw HttpServerErrorException(HttpStatus.NOT_FOUND, "Não foi possível encontrar o token.")
 

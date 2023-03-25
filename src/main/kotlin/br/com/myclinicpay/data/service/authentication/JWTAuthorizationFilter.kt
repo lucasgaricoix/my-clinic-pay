@@ -19,15 +19,15 @@ class JWTAuthorizationFilter(
 ) {
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
         val header = request.getHeader("Authorization")
-        val refreshToken = request.getHeader("Refresh-Token")
+//        val refreshToken = request.getHeader("Refresh-Token")
 
-        if (refreshToken != null) {
-            val validToken = this.refreshTokenService.validateToken(refreshToken)
-            val auth = getAuthenticationByRefreshToken(validToken.user.email)
-            SecurityContextHolder.getContext().authentication = auth
-            chain.doFilter(request, response)
-            return
-        }
+//        if (refreshToken != null) {
+//            val validToken = this.refreshTokenService.validateToken(refreshToken)
+//            val auth = getAuthenticationByRefreshToken(validToken.user.email)
+//            SecurityContextHolder.getContext().authentication = auth
+//            chain.doFilter(request, response)
+//            return
+//        }
 
         if (header == null || !header.startsWith("Bearer")) {
             chain.doFilter(request, response)
