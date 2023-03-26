@@ -26,6 +26,9 @@ class SecurityConfig() : WebSecurityConfigurerAdapter() {
     @Autowired
     private lateinit var jwtUtil: JWTUtil
 
+    @Autowired
+    private lateinit var aesUtil: AESUtil
+
     override fun configure(http: HttpSecurity) {
         http.cors().and().csrf().disable()
             .authorizeRequests()
@@ -35,18 +38,13 @@ class SecurityConfig() : WebSecurityConfigurerAdapter() {
             .authenticated()
 
         http.addFilter(JWTAuthenticationFilter(authenticationManager(), jwtUtil, refreshTokenService))
-        http.addFilter(JWTRefreshTokenFilter(authenticationManager(), jwtUtil, refreshTokenService))
+        http.addFilter(JWTRefreshTokenFilter(authenticationManager(), jwtUtil, refreshTokenService, aesUtil))
         http.addFilter(JWTAuthorizationFilter(authenticationManager(), jwtUtil, userService, refreshTokenService))
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
     }
 
-    @Bean
-    fun bCryptPasswordEncoder(): BCryptPasswordEncoder {
-        return BCryptPasswordEncoder()
-    }
-
     override fun configure(auth: AuthenticationManagerBuilder) {
-        auth.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder())
+        auth.userDetailsService(userService).passwordEncoder(aesUtil)
     }
 }

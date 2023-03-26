@@ -1,5 +1,6 @@
 package br.com.myclinicpay.data.service.user
 
+import br.com.myclinicpay.data.service.authentication.AESUtil
 import br.com.myclinicpay.data.usecases.user.UserRepository
 import br.com.myclinicpay.domain.model.user.Credential
 import br.com.myclinicpay.domain.model.user.User
@@ -13,19 +14,19 @@ import org.springframework.web.client.HttpServerErrorException
 
 @Service
 class UserService(private val userRepository: UserRepository) : UserContract, UserDetailsService {
-    override fun createUser(user: User): User {
+    override fun createUser(user: User, aesUtil: AESUtil): User {
         val userExists = userRepository.findByEmail(user.email)
 
         if (userExists == null) {
-            val createdUser = userRepository.createUser(user)
+            val createdUser = userRepository.createUser(user, aesUtil)
             return user.fromEntity(createdUser)
         }
 
         return userExists.toModel()
     }
 
-    override fun updateUser(user: User): User {
-        val updatedUser = userRepository.updateUser(user)
+    override fun updateUser(user: User, aesUtil: AESUtil): User {
+        val updatedUser = userRepository.updateUser(user, aesUtil)
         return updatedUser.toModel()
     }
 

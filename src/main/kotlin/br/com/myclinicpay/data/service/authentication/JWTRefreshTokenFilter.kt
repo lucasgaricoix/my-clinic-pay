@@ -19,7 +19,8 @@ import javax.servlet.http.HttpServletResponse
 class JWTRefreshTokenFilter(
     authenticationManager: AuthenticationManager,
     private var jwtUtil: JWTUtil,
-    private var refreshTokenService: RefreshTokenService
+    private var refreshTokenService: RefreshTokenService,
+    private var aesUtil: AESUtil
 ) : UsernamePasswordAuthenticationFilter() {
     init {
         this.authenticationManager = authenticationManager
@@ -34,7 +35,7 @@ class JWTRefreshTokenFilter(
 
             val token = UsernamePasswordAuthenticationToken(
                 refreshTokenEntity.user.email,
-                refreshTokenEntity.user.password,
+                this.decryptPassword(refreshTokenEntity.user.password),
                 mutableListOf()
             )
 
@@ -67,6 +68,12 @@ class JWTRefreshTokenFilter(
         response.status = error.status
         response.contentType = "application/json"
         response.writer.append(error.toString())
+    }
+
+    private fun decryptPassword(password: String): String {
+        val key = aesUtil.getKeyFromPassword()
+        val ivParameterSpec = aesUtil.getIvParameterSpec()
+        return aesUtil.decrypt(password, key, ivParameterSpec)
     }
 
     private data class BadCredentialsError(

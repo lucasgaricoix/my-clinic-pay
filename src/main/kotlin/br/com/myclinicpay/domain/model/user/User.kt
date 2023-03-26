@@ -1,5 +1,6 @@
 package br.com.myclinicpay.domain.model.user
 
+import br.com.myclinicpay.data.service.authentication.AESUtil
 import br.com.myclinicpay.domain.model.schedule.Interval
 import br.com.myclinicpay.domain.model.schedule.Schedule
 import br.com.myclinicpay.domain.model.schedule.ScheduleRules
@@ -9,7 +10,6 @@ import br.com.myclinicpay.infra.db.mongoDb.entities.ScheduleSettingsEntity
 import br.com.myclinicpay.infra.db.mongoDb.entities.SettingsEntity
 import br.com.myclinicpay.infra.db.mongoDb.entities.UserEntity
 import org.bson.types.ObjectId
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import java.io.Serializable
 
 data class User(
@@ -31,13 +31,13 @@ data class User(
         role: String,
     ) : this(id, name, email, password, picture, role, null, null)
 
-    fun toEntity(): UserEntity {
+    fun toEntity(aesUtil: AESUtil): UserEntity {
         if (this.settings != null) {
             return UserEntity(
                 ObjectId.get(),
                 this.name,
                 this.email,
-                this.bCryptPasswordEncoder(),
+                aesUtil.encode(this.password),
                 this.picture,
                 this.role,
                 SettingsEntity(
@@ -96,9 +96,5 @@ data class User(
             userEntity.picture,
             userEntity.role,
         )
-    }
-
-    private fun bCryptPasswordEncoder(): String {
-        return BCryptPasswordEncoder().encode(this.password)
     }
 }
