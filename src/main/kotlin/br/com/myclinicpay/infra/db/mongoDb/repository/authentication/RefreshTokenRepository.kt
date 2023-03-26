@@ -25,7 +25,7 @@ class RefreshTokenRepository : RefreshTokenRepository {
 
     override fun findByUsername(username: String): RefreshTokenEntity? {
         val mongodbTemplate = Connection.getTemplate()
-        val query = Query(Criteria.where("username").isEqualTo(username))
+        val query = Query(Criteria.where("user.email").isEqualTo(username))
         return mongodbTemplate.findOne(query, collectionName)
     }
 

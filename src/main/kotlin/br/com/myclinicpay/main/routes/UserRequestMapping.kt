@@ -14,7 +14,7 @@ class UserRequestMapping {
     @Autowired
     private lateinit var aesUtil: AESUtil
 
-    @PutMapping
+    @PatchMapping
     fun updateUser(@RequestBody user: User): ResponseEntity<User> {
         return UserFactory().build().updateUser(user, aesUtil)
     }

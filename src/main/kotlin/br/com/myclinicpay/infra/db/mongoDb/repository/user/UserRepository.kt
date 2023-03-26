@@ -30,14 +30,12 @@ class UserRepository : UserRepository {
         val mongodbTemplate = Connection.getTemplate()
         val query = Query(Criteria.where("email").isEqualTo(user.email))
         val userEntity = user.toEntity(aesUtil)
-        val toUpdate = Update().set("name", userEntity.name)
-            .set("email", userEntity.email)
-            .set("password", userEntity.password)
+        val toUpdate = Update()
             .set("picture", userEntity.picture)
             .set("role", userEntity.role)
             .set("settings", userEntity.settings)
 
-        val updated = mongodbTemplate.updateFirst<UserEntity>(query, toUpdate)
+        val updated = mongodbTemplate.updateFirst<UserEntity>(query, toUpdate, collectionName)
 
         if (updated.modifiedCount < 1) {
             throw HttpServerErrorException(HttpStatus.NOT_MODIFIED, "Não foi possível atualizar o cadastro")
