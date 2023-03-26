@@ -1,5 +1,6 @@
 package br.com.myclinicpay.infra.db.mongoDb.repository.user
 
+import br.com.myclinicpay.data.service.authentication.AESUtil
 import br.com.myclinicpay.data.usecases.user.UserRepository
 import br.com.myclinicpay.domain.model.user.User
 import br.com.myclinicpay.infra.db.mongoDb.Connection
@@ -20,23 +21,21 @@ import org.springframework.web.client.HttpServerErrorException
 class UserRepository : UserRepository {
     private val collectionName = "user"
 
-    override fun createUser(user: User): UserEntity {
+    override fun createUser(user: User, aesUtil: AESUtil): UserEntity {
         val mongodbTemplate = Connection.getTemplate()
-        return mongodbTemplate.save<UserEntity>(user.toEntity(), collectionName)
+        return mongodbTemplate.save<UserEntity>(user.toEntity(aesUtil), collectionName)
     }
 
-    override fun updateUser(user: User): UserEntity {
+    override fun updateUser(user: User, aesUtil: AESUtil): UserEntity {
         val mongodbTemplate = Connection.getTemplate()
         val query = Query(Criteria.where("email").isEqualTo(user.email))
-        val userEntity = user.toEntity()
-        val toUpdate = Update().set("name", userEntity.name)
-            .set("email", userEntity.email)
-            .set("password", userEntity.password)
+        val userEntity = user.toEntity(aesUtil)
+        val toUpdate = Update()
             .set("picture", userEntity.picture)
             .set("role", userEntity.role)
             .set("settings", userEntity.settings)
 
-        val updated = mongodbTemplate.updateFirst<UserEntity>(query, toUpdate)
+        val updated = mongodbTemplate.updateFirst<UserEntity>(query, toUpdate, collectionName)
 
         if (updated.modifiedCount < 1) {
             throw HttpServerErrorException(HttpStatus.NOT_MODIFIED, "Não foi possível atualizar o cadastro")

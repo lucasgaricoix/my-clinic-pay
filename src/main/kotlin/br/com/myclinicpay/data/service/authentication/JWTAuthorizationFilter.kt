@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse
 class JWTAuthorizationFilter(
     authenticationManager: AuthenticationManager,
     private var jwtUtil: JWTUtil,
-    private var userService: UserService
+    private var userService: UserService,
 ) : BasicAuthenticationFilter(
     authenticationManager
 ) {

@@ -1,5 +1,7 @@
 package br.com.myclinicpay.main.config
 
+import br.com.myclinicpay.data.service.authentication.AESUtil
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry
@@ -14,6 +16,6 @@ class ResourceConfiguration(
     }
 
     override fun addCorsMappings(registry: CorsRegistry) {
-        registry.addMapping("/**").allowedMethods("*").exposedHeaders("Authorization")
+        registry.addMapping("/**").allowedMethods("*").exposedHeaders("Authorization", "Refresh-token")
     }
 }
