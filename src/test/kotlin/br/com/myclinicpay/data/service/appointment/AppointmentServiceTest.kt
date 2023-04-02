@@ -44,7 +44,7 @@ class AppointmentServiceTest {
 
         Mockito.verify(appointmentRepositoryMock).findAllByDateIntervals(from, to)
 
-        Assertions.assertEquals(7, appointments.size)
+        Assertions.assertEquals(2, appointments.size)
     }
 
     private fun getListOfAppointment(date: LocalDate): List<AppointmentEntity> {

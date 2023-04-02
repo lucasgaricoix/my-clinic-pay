@@ -6,7 +6,6 @@ import br.com.myclinicpay.data.usecases.user.UserRepository
 import br.com.myclinicpay.domain.model.appointment.Appointment
 import br.com.myclinicpay.domain.usecases.appointment.AppointmentService
 import br.com.myclinicpay.infra.db.mongoDb.entities.*
-import org.apache.tomcat.jni.Local
 import org.bson.types.ObjectId
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -69,39 +68,39 @@ class AppointmentService(
 
         appointments.sortedBy { it.date }
 
-        if (appointments.size < totalDaysOfWeek) {
-            return this.fillAppointments(appointments)
-        }
+//        if (appointments.size < totalDaysOfWeek) {
+//            return this.fillAppointments(appointments)
+//        }
 
         return appointments
     }
 
-    private fun fillAppointments(appointments: List<AppointmentEntity>): List<AppointmentEntity> {
-        val appointmentsList = mutableListOf<AppointmentEntity>()
-        appointmentsList.addAll(appointments)
+//    private fun fillAppointments(appointments: List<AppointmentEntity>): List<AppointmentEntity> {
+//        val appointmentsList = mutableListOf<AppointmentEntity>()
+//        appointmentsList.addAll(appointments)
+//
+//        val difference = totalDaysOfWeek - appointmentsList.size
+//        if (difference > 0) {
+//            val lastEntity = appointmentsList.lastOrNull()
+//            if (lastEntity != null) {
+//                for (index in 1..difference) {
+//                    appointmentsList.add(this.getFilledAppointment(lastEntity, index.toLong()))
+//                }
+//            }
+//            return appointmentsList
+//        }
+//
+//        return listOf()
+//    }
 
-        val difference = totalDaysOfWeek - appointmentsList.size
-        if (difference > 0) {
-            val lastEntity = appointmentsList.lastOrNull()
-            if (lastEntity != null) {
-                for (index in 1..difference) {
-                    appointmentsList.add(this.getFilledAppointment(lastEntity, index.toLong()))
-                }
-            }
-            return appointmentsList
-        }
-
-        return listOf()
-    }
-
-    private fun getFilledAppointment(currentAppointment: AppointmentEntity, days: Long): AppointmentEntity {
-        return AppointmentEntity(
-            ObjectId.get(),
-            currentAppointment.user,
-            currentAppointment.date.plusDays(days),
-
-        )
-    }
+//    private fun getFilledAppointment(currentAppointment: AppointmentEntity, days: Long): AppointmentEntity {
+//        return AppointmentEntity(
+//            ObjectId.get(),
+//            currentAppointment.user,
+//            currentAppointment.date.plusDays(days),
+//
+//            )
+//    }
 
     private fun toEntity(
         personEntity: PersonEntity, userEntity: UserEntity, appointment: Appointment
