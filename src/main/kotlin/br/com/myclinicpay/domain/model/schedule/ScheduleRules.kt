@@ -6,6 +6,6 @@ data class ScheduleRules(
 )
 
 data class Interval(
-    val from: String,
-    val to: String
+    val from: String?,
+    val to: String?
 )

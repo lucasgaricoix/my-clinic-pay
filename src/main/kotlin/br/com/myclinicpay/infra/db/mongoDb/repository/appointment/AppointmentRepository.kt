@@ -4,6 +4,7 @@ import br.com.myclinicpay.data.usecases.appointment.AppointmentRepository
 import br.com.myclinicpay.infra.db.mongoDb.Connection
 import br.com.myclinicpay.infra.db.mongoDb.entities.AppointmentEntity
 import org.bson.types.ObjectId
+import org.springframework.data.mongodb.core.find
 import org.springframework.data.mongodb.core.findOne
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
@@ -47,5 +48,11 @@ class AppointmentRepository : AppointmentRepository {
         }
 
         return id.toString()
+    }
+
+    override fun findAllByDateIntervals(from: LocalDate, to: LocalDate): List<AppointmentEntity> {
+        val mongodbTemplate = Connection.getTemplate()
+        val query = Query(Criteria.where("date").gte(from).lte(to))
+        return mongodbTemplate.find(query, collectionName)
     }
 }

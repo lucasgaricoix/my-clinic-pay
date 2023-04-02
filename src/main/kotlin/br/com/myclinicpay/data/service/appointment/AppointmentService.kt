@@ -10,6 +10,7 @@ import org.bson.types.ObjectId
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpServerErrorException
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Service
@@ -18,6 +19,7 @@ class AppointmentService(
     private val userRepository: UserRepository,
     private val appointmentRepository: AppointmentRepository
 ) : AppointmentService {
+    private val totalDaysOfWeek = 7
     private val timeZoneOffset = 3L
     override fun createOrUpdate(appointment: Appointment): String {
         val personEntity = findPersonByIdRepository.findEntityById(appointment.patientId)
@@ -53,6 +55,52 @@ class AppointmentService(
 
         return appointment
     }
+
+    override fun findWeeklyAppointments(from: LocalDate, to: LocalDate): List<AppointmentEntity> {
+        val appointments = this.appointmentRepository.findAllByDateIntervals(from, to)
+
+        if (appointments.isEmpty()) {
+            throw HttpServerErrorException(
+                HttpStatus.NOT_FOUND,
+                "Não foi possível encontrar agenda com o período informado"
+            )
+        }
+
+        appointments.sortedBy { it.date }
+
+//        if (appointments.size < totalDaysOfWeek) {
+//            return this.fillAppointments(appointments)
+//        }
+
+        return appointments
+    }
+
+//    private fun fillAppointments(appointments: List<AppointmentEntity>): List<AppointmentEntity> {
+//        val appointmentsList = mutableListOf<AppointmentEntity>()
+//        appointmentsList.addAll(appointments)
+//
+//        val difference = totalDaysOfWeek - appointmentsList.size
+//        if (difference > 0) {
+//            val lastEntity = appointmentsList.lastOrNull()
+//            if (lastEntity != null) {
+//                for (index in 1..difference) {
+//                    appointmentsList.add(this.getFilledAppointment(lastEntity, index.toLong()))
+//                }
+//            }
+//            return appointmentsList
+//        }
+//
+//        return listOf()
+//    }
+
+//    private fun getFilledAppointment(currentAppointment: AppointmentEntity, days: Long): AppointmentEntity {
+//        return AppointmentEntity(
+//            ObjectId.get(),
+//            currentAppointment.user,
+//            currentAppointment.date.plusDays(days),
+//
+//            )
+//    }
 
     private fun toEntity(
         personEntity: PersonEntity, userEntity: UserEntity, appointment: Appointment
