@@ -2,10 +2,6 @@ package br.com.myclinicpay.infra.db.mongoDb.repository.payment.income
 
 import br.com.myclinicpay.data.usecases.payment.income.CreateIncomeRepository
 import br.com.myclinicpay.domain.model.payment.Income
-import br.com.myclinicpay.domain.model.payment_type.PaymentType
-import br.com.myclinicpay.domain.model.payment_type.TypeEnum
-import br.com.myclinicpay.domain.model.person.Person
-import br.com.myclinicpay.domain.model.person.Responsible
 import br.com.myclinicpay.infra.db.mongoDb.Connection
 import br.com.myclinicpay.infra.db.mongoDb.entities.*
 import org.bson.types.ObjectId
@@ -15,12 +11,12 @@ import org.springframework.web.client.HttpServerErrorException
 
 @Repository
 class CreateIncomeRepository : CreateIncomeRepository {
-    override fun create(income: Income, paymentType: PaymentType, person: Person, nextSession: Int): Income {
+    override fun create(income: Income, lastSession: Int?): Income {
         try {
-            val mongoTemplate = Connection.getTemplate()
-            val created = mongoTemplate.save<IncomeEntity>(toEntity(income, paymentType, person, nextSession), "income")
-            mongoTemplate.save(toPaymentEntity(created, paymentType))
-            return toDomainModel(created)
+            val mongodbTemplate = Connection.getTemplate()
+            val created = mongodbTemplate.save<IncomeEntity>(toEntity(income, lastSession), "income")
+            mongodbTemplate.save(toPaymentEntity(created))
+            return created.toDomainModel()
         } catch (error: Exception) {
             throw HttpServerErrorException(
                 HttpStatus.INTERNAL_SERVER_ERROR,
@@ -29,48 +25,10 @@ class CreateIncomeRepository : CreateIncomeRepository {
         }
     }
 
-    private fun toDomainModel(incomeEntity: IncomeEntity): Income {
-        return Income(
-            incomeEntity.id.toString(),
-            incomeEntity.date,
-            PaymentType(
-                incomeEntity.paymentType.id.toString(),
-                TypeEnum.valueOf(incomeEntity.paymentType.type.uppercase()),
-                incomeEntity.paymentType.description,
-                incomeEntity.paymentType.value
-            ),
-            incomeEntity.description,
-            incomeEntity.sessionNumber,
-            incomeEntity.isPaid,
-            incomeEntity.isPartial,
-            incomeEntity.isAbsence,
-            Person(
-                incomeEntity.person.id.toString(),
-                incomeEntity.person.name,
-                incomeEntity.person.birthDate,
-                Responsible(
-                    incomeEntity.person.responsible.id.toString(),
-                    incomeEntity.person.responsible.name
-                ),
-                PaymentType(
-                    incomeEntity.paymentType.id.toString(),
-                    TypeEnum.valueOf(incomeEntity.paymentType.type.uppercase()),
-                    incomeEntity.paymentType.description,
-                    incomeEntity.paymentType.value
-                ),
-            )
-        )
-    }
-
-    private fun toEntity(
-        income: Income,
-        paymentType: PaymentType,
-        person: Person,
-        lastSession: Int
-    ): IncomeEntity {
-        var value = paymentType.value
+    private fun toEntity(income: Income, lastSession: Int?): IncomeEntity {
+        var value = income.paymentType.value
         if (income.isPartial) {
-            value = paymentType.value / 2
+            value = income.paymentType.value / 2
         }
 
         if (income.isAbsence) {
@@ -81,25 +39,25 @@ class CreateIncomeRepository : CreateIncomeRepository {
             ObjectId.get(),
             income.date,
             PaymentTypeEntity(
-                ObjectId(paymentType.id),
-                paymentType.type.value,
-                paymentType.description,
+                ObjectId(income.paymentType.id),
+                income.paymentType.type.value,
+                income.paymentType.description,
                 value
             ),
             income.description,
-            lastSession,
+            income.sessionNumber ?: lastSession ?: 0,
             income.isPaid,
             income.isPartial,
             income.isAbsence,
             PersonEntity(
-                ObjectId(person.id),
-                person.name,
-                person.birthDate,
+                ObjectId(income.person.id),
+                income.person.name,
+                income.person.birthDate,
                 ResponsibleEntity(
-                    ObjectId(person.responsible.id),
-                    person.responsible.name
+                    ObjectId(income.person.responsible.id),
+                    income.person.responsible.name
                 ),
-                person.paymentType?.let {
+                income.person.paymentType?.let {
                     PaymentTypeEntity(
                         ObjectId(it.id),
                         it.type.value,
@@ -111,18 +69,15 @@ class CreateIncomeRepository : CreateIncomeRepository {
         )
     }
 
-    private fun toPaymentEntity(
-        income: IncomeEntity,
-        paymentType: PaymentType
-    ): PaymentEntity {
+    private fun toPaymentEntity(income: IncomeEntity): PaymentEntity {
         return PaymentEntity(
             income.id,
             income.date,
             PaymentTypeEntity(
-                ObjectId(paymentType.id),
-                paymentType.type.value,
-                paymentType.description,
-                paymentType.value
+                income.paymentType.id,
+                income.paymentType.type,
+                income.paymentType.description,
+                income.paymentType.value
             ),
             income.description
         )

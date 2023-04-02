@@ -1,9 +1,12 @@
 package br.com.myclinicpay.data.service.appointment
 
 import br.com.myclinicpay.data.usecases.appointment.AppointmentRepository
+import br.com.myclinicpay.data.usecases.payment.income.CreateIncomeRepository
+import br.com.myclinicpay.data.usecases.payment.income.FindAllBySessionIdIncomeRepository
 import br.com.myclinicpay.data.usecases.person.FindPersonByIdRepository
 import br.com.myclinicpay.data.usecases.user.UserRepository
 import br.com.myclinicpay.domain.model.appointment.Appointment
+import br.com.myclinicpay.domain.model.payment.Income
 import br.com.myclinicpay.domain.usecases.appointment.AppointmentService
 import br.com.myclinicpay.infra.db.mongoDb.entities.*
 import org.bson.types.ObjectId
@@ -12,14 +15,16 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpServerErrorException
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 
 @Service
 class AppointmentService(
     private val findPersonByIdRepository: FindPersonByIdRepository,
     private val userRepository: UserRepository,
-    private val appointmentRepository: AppointmentRepository
+    private val appointmentRepository: AppointmentRepository,
+    private val createIncomeRepository: CreateIncomeRepository,
+    private val findAllBySessionIdIncomeRepository: FindAllBySessionIdIncomeRepository
 ) : AppointmentService {
-    private val totalDaysOfWeek = 7
     private val timeZoneOffset = 3L
     override fun createOrUpdate(appointment: Appointment): String {
         val personEntity = findPersonByIdRepository.findEntityById(appointment.patientId)
@@ -30,7 +35,12 @@ class AppointmentService(
         val adaptedAppointment = toEntity(personEntity, userEntity, appointment)
 
         val appointmentExists = appointmentRepository.findByDateAndUserId(adaptedAppointment.date, appointment.userId)
-            ?: return appointmentRepository.create(adaptedAppointment).id.toString()
+
+        if (appointmentExists == null) {
+            val appointmentCreated = appointmentRepository.create(adaptedAppointment)
+            this.createPayment(appointmentCreated, personEntity)
+            return appointmentCreated.id.toString()
+        }
 
         val sameAppointment = appointmentExists.schedule.find { it.start == appointment.at }
 
@@ -68,39 +78,34 @@ class AppointmentService(
 
         appointments.sortedBy { it.date }
 
-//        if (appointments.size < totalDaysOfWeek) {
-//            return this.fillAppointments(appointments)
-//        }
-
         return appointments
     }
 
-//    private fun fillAppointments(appointments: List<AppointmentEntity>): List<AppointmentEntity> {
-//        val appointmentsList = mutableListOf<AppointmentEntity>()
-//        appointmentsList.addAll(appointments)
-//
-//        val difference = totalDaysOfWeek - appointmentsList.size
-//        if (difference > 0) {
-//            val lastEntity = appointmentsList.lastOrNull()
-//            if (lastEntity != null) {
-//                for (index in 1..difference) {
-//                    appointmentsList.add(this.getFilledAppointment(lastEntity, index.toLong()))
-//                }
-//            }
-//            return appointmentsList
-//        }
-//
-//        return listOf()
-//    }
+    private fun createPayment(appointment: AppointmentEntity, personEntity: PersonEntity) {
+        val lastDayMonth = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH)
+        val initialRange = LocalDate.of(LocalDate.now().year, LocalDate.now().month, 1)
+        val finalRange = LocalDate.of(LocalDate.now().year, LocalDate.now().month, lastDayMonth)
+        if (personEntity.paymentType == null) {
+            throw Exception("O tipo de pagamento precisa ser cadastrado para o paciente.")
+        }
 
-//    private fun getFilledAppointment(currentAppointment: AppointmentEntity, days: Long): AppointmentEntity {
-//        return AppointmentEntity(
-//            ObjectId.get(),
-//            currentAppointment.user,
-//            currentAppointment.date.plusDays(days),
-//
-//            )
-//    }
+        val income = Income(
+            ObjectId.get().toString(),
+            date = appointment.date,
+            paymentType = personEntity.paymentType.toModel(),
+            description = "receita criada a partir do agendamento",
+            sessionNumber = null,
+            isPaid = false,
+            isPartial = false,
+            isAbsence = false,
+            person = personEntity.toModel()
+        )
+
+        this.createIncomeRepository.create(
+            income,
+            this.findAllBySessionIdIncomeRepository.findAll(initialRange, finalRange)
+        )
+    }
 
     private fun toEntity(
         personEntity: PersonEntity, userEntity: UserEntity, appointment: Appointment
