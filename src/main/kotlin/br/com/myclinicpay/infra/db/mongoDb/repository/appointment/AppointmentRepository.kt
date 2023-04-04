@@ -3,6 +3,7 @@ package br.com.myclinicpay.infra.db.mongoDb.repository.appointment
 import br.com.myclinicpay.data.usecases.appointment.AppointmentRepository
 import br.com.myclinicpay.infra.db.mongoDb.Connection
 import br.com.myclinicpay.infra.db.mongoDb.entities.AppointmentEntity
+import com.mongodb.BasicDBObject
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.find
 import org.springframework.data.mongodb.core.findOne
@@ -19,6 +20,7 @@ import java.time.LocalDate
 @Repository
 class AppointmentRepository : AppointmentRepository {
     private val collectionName = "appointment"
+    private val schedules = "schedules"
     override fun create(appointmentEntity: AppointmentEntity): AppointmentEntity {
         val mongodbTemplate = Connection.getTemplate()
         return mongodbTemplate.save(appointmentEntity, collectionName)
@@ -38,9 +40,8 @@ class AppointmentRepository : AppointmentRepository {
     ): String {
         val mongodbTemplate = Connection.getTemplate()
         val updateQuery = Query(Criteria.where("_id").isEqualTo(id))
-        val toUpdate = Update()
-            .set("schedule", appointmentEntity.schedule)
-            .set("unavailableSchedule", appointmentEntity.unavailableSchedule)
+        val toUpdate = Update().set(schedules, appointmentEntity.schedules)
+            .set("unavailableSchedules", appointmentEntity.unavailableSchedules)
         val updated = mongodbTemplate.updateFirst<AppointmentEntity>(updateQuery, toUpdate, collectionName)
 
         if (updated.modifiedCount <= 0) {
@@ -54,5 +55,16 @@ class AppointmentRepository : AppointmentRepository {
         val mongodbTemplate = Connection.getTemplate()
         val query = Query(Criteria.where("date").gte(from).lte(to))
         return mongodbTemplate.find(query, collectionName)
+    }
+
+    override fun deleteByScheduleId(id: String, scheduleId: String): String {
+        val mongodbTemplate = Connection.getTemplate()
+        val pull = Update().pull(schedules, BasicDBObject("_id", scheduleId))
+        val updated = mongodbTemplate.updateMulti(Query(Criteria("_id").isEqualTo(id)), pull, collectionName)
+
+        if (updated.modifiedCount < 1L) {
+            throw HttpServerErrorException(HttpStatus.NOT_MODIFIED, "Não foi possível deletear o agendamento.")
+        }
+        return scheduleId
     }
 }

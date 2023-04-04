@@ -1,14 +1,16 @@
 package br.com.myclinicpay.data.service.appointment
 
 import br.com.myclinicpay.data.usecases.appointment.AppointmentRepository
-import br.com.myclinicpay.data.usecases.payment.income.CreateIncomeRepository
 import br.com.myclinicpay.data.usecases.payment.income.FindAllBySessionIdIncomeRepository
+import br.com.myclinicpay.data.usecases.payment.income.IncomeRepository
 import br.com.myclinicpay.data.usecases.person.FindPersonByIdRepository
 import br.com.myclinicpay.data.usecases.user.UserRepository
 import br.com.myclinicpay.domain.model.appointment.Appointment
+import br.com.myclinicpay.domain.model.appointment.AppointmentDTO
 import br.com.myclinicpay.domain.model.payment.Income
 import br.com.myclinicpay.domain.usecases.appointment.AppointmentService
-import br.com.myclinicpay.infra.db.mongoDb.entities.*
+import br.com.myclinicpay.infra.db.mongoDb.entities.AppointmentEntity
+import br.com.myclinicpay.infra.db.mongoDb.entities.PersonEntity
 import org.bson.types.ObjectId
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -22,7 +24,7 @@ class AppointmentService(
     private val findPersonByIdRepository: FindPersonByIdRepository,
     private val userRepository: UserRepository,
     private val appointmentRepository: AppointmentRepository,
-    private val createIncomeRepository: CreateIncomeRepository,
+    private val incomeRepository: IncomeRepository,
     private val findAllBySessionIdIncomeRepository: FindAllBySessionIdIncomeRepository
 ) : AppointmentService {
     private val timeZoneOffset = 3L
@@ -32,41 +34,42 @@ class AppointmentService(
             HttpStatus.NOT_FOUND, "Usuário não encontrado"
         )
 
-        val adaptedAppointment = toEntity(personEntity, userEntity, appointment)
+        val adaptedAppointment = appointment.toEntity(personEntity, userEntity)
 
         val appointmentExists = appointmentRepository.findByDateAndUserId(adaptedAppointment.date, appointment.userId)
 
         if (appointmentExists == null) {
             val appointmentCreated = appointmentRepository.create(adaptedAppointment)
-            this.createPayment(appointmentCreated, personEntity)
+            this.createPayment(appointmentCreated, personEntity, null)
             return appointmentCreated.id.toString()
         }
 
-        val sameAppointment = appointmentExists.schedule.find { it.start == appointment.at }
+        val sameAppointment = appointmentExists.schedules.find { it.start == appointment.at.minusHours(timeZoneOffset) }
 
         if (sameAppointment != null) {
             throw HttpServerErrorException(HttpStatus.NOT_ACCEPTABLE, "Já existe um mesmo agendamento")
         }
 
-        appointmentExists.schedule.addAll(adaptedAppointment.schedule)
-        appointmentExists.unavailableSchedule.addAll(adaptedAppointment.unavailableSchedule)
+        appointmentExists.schedules.addAll(adaptedAppointment.schedules)
+        appointmentExists.unavailableSchedules.addAll(adaptedAppointment.unavailableSchedules)
 
         appointmentRepository.updateScheduledEntityById(appointmentExists.id, appointmentExists)
+        this.createPayment(appointmentExists, personEntity, adaptedAppointment.schedules.first().id.toString())
 
         return appointmentExists.id.toString()
     }
 
-    override fun findByDateAndUserId(date: LocalDateTime, userId: String): AppointmentEntity {
+    override fun findByDateAndUserId(date: LocalDateTime, userId: String): AppointmentDTO {
         val zonedTime = date.minusHours(timeZoneOffset).toLocalDate()
         val appointment = appointmentRepository.findByDateAndUserId(zonedTime, userId)
             ?: throw HttpServerErrorException(HttpStatus.NOT_FOUND, "Não foi possível encontrar uma agenda")
 
-        appointment.schedule.sortBy { it.start }
+        appointment.schedules.sortBy { it.start }
 
-        return appointment
+        return appointment.toDTO()
     }
 
-    override fun findWeeklyAppointments(from: LocalDate, to: LocalDate): List<AppointmentEntity> {
+    override fun findWeeklyAppointments(from: LocalDate, to: LocalDate): List<AppointmentDTO> {
         val appointments = this.appointmentRepository.findAllByDateIntervals(from, to)
 
         if (appointments.isEmpty()) {
@@ -78,54 +81,61 @@ class AppointmentService(
 
         appointments.sortedBy { it.date }
 
-        return appointments
+        for (appointment in appointments) {
+            appointment.schedules.sortBy { it.start }
+        }
+
+        return appointments.map { it.toDTO() }
     }
 
-    private fun createPayment(appointment: AppointmentEntity, personEntity: PersonEntity) {
+    override fun deleteById(id: String, scheduleId: String): String {
+        val deletedId = this.appointmentRepository.deleteByScheduleId(id, scheduleId)
+
+        if (deletedId.isNotBlank()) {
+            this.deletePayment(scheduleId)
+        }
+
+        return deletedId
+    }
+
+    private fun createPayment(
+        appointment: AppointmentEntity,
+        personEntity: PersonEntity,
+        scheduleId: String?
+    ): String? {
+        if (personEntity.paymentType == null) {
+            throw HttpServerErrorException(
+                HttpStatus.FORBIDDEN,
+                "O tipo de pagamento precisa ser cadastrado para o paciente."
+            )
+        }
+
+        val getScheduleId = scheduleId ?: appointment.schedules.first().id.toString()
+
         val lastDayMonth = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH)
         val initialRange = LocalDate.of(LocalDate.now().year, LocalDate.now().month, 1)
         val finalRange = LocalDate.of(LocalDate.now().year, LocalDate.now().month, lastDayMonth)
-        if (personEntity.paymentType == null) {
-            throw Exception("O tipo de pagamento precisa ser cadastrado para o paciente.")
-        }
+        val lastSession = this.findAllBySessionIdIncomeRepository.findAll(initialRange, finalRange)
 
         val income = Income(
             ObjectId.get().toString(),
             date = appointment.date,
             paymentType = personEntity.paymentType.toModel(),
-            description = "receita criada a partir do agendamento",
+            description = "Receita criada a partir do agendamento",
             sessionNumber = null,
             isPaid = false,
             isPartial = false,
             isAbsence = false,
-            person = personEntity.toModel()
+            person = personEntity.toModel(),
+            scheduleId = getScheduleId,
         )
 
-        this.createIncomeRepository.create(
-            income,
-            this.findAllBySessionIdIncomeRepository.findAll(initialRange, finalRange)
-        )
+        val created = this.incomeRepository.create(income, lastSession)
+
+        return created.id
     }
 
-    private fun toEntity(
-        personEntity: PersonEntity, userEntity: UserEntity, appointment: Appointment
-    ): AppointmentEntity {
-        val zonedTime = appointment.at.minusHours(timeZoneOffset)
-        return AppointmentEntity(
-            ObjectId.get(), userEntity, zonedTime.toLocalDate(), mutableListOf(
-                ScheduleEntity(
-                    zonedTime,
-                    zonedTime.plusMinutes(appointment.duration.toLong()),
-                    appointment.duration,
-                    personEntity,
-                    enumValueOf<AppointmentTypeEntity>(appointment.appointmentType.name).type,
-                    appointment.description
-                )
-            ), mutableListOf(
-                UnavailableScheduleEntity(
-                    zonedTime, zonedTime.plusMinutes(appointment.duration.toLong())
-                )
-            )
-        )
+    private fun deletePayment(scheduleId: String): String {
+        return this.incomeRepository.deleteByScheduleId(scheduleId)
     }
 }

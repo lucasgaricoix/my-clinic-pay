@@ -1,6 +1,6 @@
 package br.com.myclinicpay.data.service.payment.income
 
-import br.com.myclinicpay.data.usecases.payment.income.CreateIncomeRepository
+import br.com.myclinicpay.data.usecases.payment.income.IncomeRepository
 import br.com.myclinicpay.data.usecases.payment.income.FindAllBySessionIdIncomeRepository
 import br.com.myclinicpay.domain.model.payment.Income
 import br.com.myclinicpay.domain.usecases.payment.income.CreateIncome
@@ -10,7 +10,7 @@ import java.util.*
 
 @Service
 class CreateIncomeService(
-    private val createIncomeRepository: CreateIncomeRepository,
+    private val incomeRepository: IncomeRepository,
     private val findAllBySessionIdIncomeRepository: FindAllBySessionIdIncomeRepository
 ) : CreateIncome {
     private val lastDayMonth = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH)
@@ -21,14 +21,14 @@ class CreateIncomeService(
         val nextSession = this.findLastSessionId()
 
         if (income.sessionNumber == null) {
-            return createIncomeRepository.create(income, nextSession)
+            return incomeRepository.create(income, nextSession)
         }
 
         if (income.person.name.isBlank()) {
             throw Exception("Person not found.")
         }
 
-        return createIncomeRepository.create(income, nextSession)
+        return incomeRepository.create(income, nextSession)
     }
 
     override fun findLastSessionId(): Int {

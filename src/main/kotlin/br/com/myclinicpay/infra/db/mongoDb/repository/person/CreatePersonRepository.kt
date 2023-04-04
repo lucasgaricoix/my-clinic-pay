@@ -54,7 +54,7 @@ class CreatePersonRepository : CreatePersonRepository {
             personEntity.paymentType?.let {
                 PaymentType(
                     it.id.toString(),
-                    TypeEnum.valueOf(it.type),
+                    TypeEnum.valueOf(it.type.uppercase()),
                     it.description,
                     it.value
                 )

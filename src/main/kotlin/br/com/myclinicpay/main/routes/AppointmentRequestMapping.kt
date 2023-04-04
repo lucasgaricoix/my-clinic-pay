@@ -1,7 +1,7 @@
 package br.com.myclinicpay.main.routes
 
 import br.com.myclinicpay.domain.model.appointment.Appointment
-import br.com.myclinicpay.infra.db.mongoDb.entities.AppointmentEntity
+import br.com.myclinicpay.domain.model.appointment.AppointmentDTO
 import br.com.myclinicpay.presentation.factories.appointment.AppointmentFactory
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.RequestEntity
@@ -14,15 +14,15 @@ import java.time.LocalDateTime
 class AppointmentRequestMapping {
 
     @PostMapping
-    fun createAppointment(appointmentEntity: RequestEntity<Appointment>): ResponseEntity<String> {
-        return AppointmentFactory().build().createAppointment(appointmentEntity)
+    fun createAppointment(appointment: RequestEntity<Appointment>): ResponseEntity<String> {
+        return AppointmentFactory().build().createAppointment(appointment)
     }
 
     @GetMapping("/{userId}")
     fun findAppointmentByUserAndDate(
         @PathVariable userId: String,
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam(name = "date") date: LocalDateTime
-    ): ResponseEntity<AppointmentEntity> {
+    ): ResponseEntity<AppointmentDTO> {
         return AppointmentFactory().build().findAppointmentByDateAndUser(date, userId)
     }
 
@@ -30,7 +30,12 @@ class AppointmentRequestMapping {
     fun findAppointments(
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam(name = "from") from: LocalDateTime,
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam(name = "to") to: LocalDateTime,
-    ): ResponseEntity<List<AppointmentEntity>> {
+    ): ResponseEntity<List<AppointmentDTO>> {
         return AppointmentFactory().build().findWeeklyAppointments(from.toLocalDate(), to.toLocalDate())
+    }
+
+    @DeleteMapping("/{id}/{scheduleId}")
+    fun deleteById(@PathVariable id: String, @PathVariable scheduleId: String): ResponseEntity<String> {
+        return AppointmentFactory().build().deleteById(id, scheduleId)
     }
 }

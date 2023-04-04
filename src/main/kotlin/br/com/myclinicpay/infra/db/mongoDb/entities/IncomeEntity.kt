@@ -21,7 +21,8 @@ class IncomeEntity(
     val isPaid: Boolean,
     val isPartial: Boolean = false,
     val isAbsence: Boolean = false,
-    val person: PersonEntity
+    val person: PersonEntity,
+    val scheduleId: ObjectId?
 ) {
     fun toDomainModel(): Income {
         return Income(
@@ -51,8 +52,9 @@ class IncomeEntity(
                     TypeEnum.valueOf(this.paymentType.type.uppercase()),
                     this.paymentType.description,
                     this.paymentType.value
-                ),
-            )
+                )
+            ),
+            this.scheduleId.toString()
         )
     }
 }

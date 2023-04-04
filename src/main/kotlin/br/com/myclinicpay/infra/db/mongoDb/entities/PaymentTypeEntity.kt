@@ -27,7 +27,8 @@ data class PaymentTypeEntity(
             this.id.toString(),
             TypeEnum.valueOf(this.type.uppercase()),
             this.description,
-            this.value
+            this.value,
+            this.color
         )
     }
 }
