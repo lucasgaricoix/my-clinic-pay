@@ -66,7 +66,7 @@ class IncomeRepository : IncomeRepository {
 
     override fun deleteByScheduleId(scheduleId: String): String {
         val mongodbTemplate = Connection.getTemplate()
-        val query = Query(Criteria("scheduleId").isEqualTo(scheduleId))
+        val query = Query(Criteria.where("scheduleId").isEqualTo(ObjectId(scheduleId)))
         val deleted = mongodbTemplate.remove(query, collectionName)
 
         if (deleted.deletedCount < 1L) {

@@ -4,6 +4,7 @@ import br.com.myclinicpay.data.usecases.payment.income.IncomeRepository
 import br.com.myclinicpay.data.usecases.payment.income.FindAllBySessionIdIncomeRepository
 import br.com.myclinicpay.domain.model.payment.Income
 import br.com.myclinicpay.domain.usecases.payment.income.CreateIncome
+import br.com.myclinicpay.infra.db.mongoDb.repository.payment.type.FindPaymentTypeByIdRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.util.*
@@ -17,7 +18,6 @@ class CreateIncomeService(
     private val initialRange = LocalDate.of(LocalDate.now().year, LocalDate.now().month, 1)
     private val finalRange = LocalDate.of(LocalDate.now().year, LocalDate.now().month, lastDayMonth)
     override fun create(income: Income): Income {
-
         val nextSession = this.findLastSessionId()
 
         if (income.sessionNumber == null) {

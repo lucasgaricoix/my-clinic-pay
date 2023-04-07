@@ -1,6 +1,6 @@
 package br.com.myclinicpay.domain.model.schedule
 
-import br.com.myclinicpay.infra.db.mongoDb.entities.PersonEntity
+import br.com.myclinicpay.domain.model.person.Person
 import java.time.LocalDateTime
 
 class ScheduleDTO(
@@ -8,7 +8,7 @@ class ScheduleDTO(
     val start: LocalDateTime,
     val end: LocalDateTime,
     val duration: Int,
-    val patient: PersonEntity,
+    val patient: Person,
     val appointmentType: String,
     val description: String?
 )

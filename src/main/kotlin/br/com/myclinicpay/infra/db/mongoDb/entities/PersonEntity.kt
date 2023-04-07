@@ -16,9 +16,9 @@ data class PersonEntity(
     val name: String,
     val birthDate: LocalDate,
     val responsible: ResponsibleEntity,
-    val paymentType: PaymentTypeEntity?
+    val paymentTypeId: String?
 ) {
-    fun toModel(): Person {
+    fun toModel(paymentTypeEntity: PaymentTypeEntity?): Person {
         return Person(
             this.id.toString(),
             this.name,
@@ -27,12 +27,12 @@ data class PersonEntity(
                 this.responsible.id.toString(),
                 this.responsible.name
             ),
-            this.paymentType?.let {
+            paymentTypeEntity?.let {
                 PaymentType(
-                    it.id.toString(),
-                    TypeEnum.valueOf(it.type.uppercase()),
-                    it.description,
-                    it.value
+                    paymentTypeEntity.id.toString(),
+                    TypeEnum.valueOf(paymentTypeEntity.type.uppercase()),
+                    paymentTypeEntity.description,
+                    paymentTypeEntity.value
                 )
             }
         )

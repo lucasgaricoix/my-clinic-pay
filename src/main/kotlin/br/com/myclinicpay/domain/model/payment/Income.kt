@@ -55,14 +55,7 @@ class Income(
                     ObjectId(this.person.responsible.id),
                     this.person.responsible.name
                 ),
-                this.person.paymentType?.let {
-                    PaymentTypeEntity(
-                        ObjectId(it.id),
-                        it.type.value,
-                        it.description,
-                        it.value
-                    )
-                },
+                this.paymentType.id,
             ),
             scheduleId
         )
