@@ -29,10 +29,10 @@ class AppointmentRepository : AppointmentRepository {
     override fun findByDateAndUserId(date: LocalDate, userId: String): AppointmentEntity? {
         val mongodbTemplate = Connection.getTemplate()
         val query = Query(
-            Criteria.where("date").isEqualTo(date).and("user._id").isEqualTo(userId)
+            Criteria.where("date").isEqualTo(date).and("userId").isEqualTo(userId)
         )
 
-        return mongodbTemplate.findOne(query)
+        return mongodbTemplate.findOne(query, collectionName)
     }
 
     override fun updateScheduledEntityById(
@@ -51,9 +51,9 @@ class AppointmentRepository : AppointmentRepository {
         return id.toString()
     }
 
-    override fun findAllByDateIntervals(from: LocalDate, to: LocalDate): List<AppointmentEntity> {
+    override fun findAllByDateIntervals(from: LocalDate, to: LocalDate, userId: String): List<AppointmentEntity> {
         val mongodbTemplate = Connection.getTemplate()
-        val query = Query(Criteria.where("date").gte(from).lte(to))
+        val query = Query(Criteria.where("date").gte(from).lte(to).and("userId").isEqualTo(userId))
         return mongodbTemplate.find(query, collectionName)
     }
 

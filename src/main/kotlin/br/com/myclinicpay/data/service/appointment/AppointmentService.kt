@@ -82,8 +82,8 @@ class AppointmentService(
         return appointment.toDTO(user, scheduleDTO)
     }
 
-    override fun findWeeklyAppointments(from: LocalDate, to: LocalDate): List<AppointmentDTO> {
-        val appointments = this.appointmentRepository.findAllByDateIntervals(from, to)
+    override fun findWeeklyAppointments(from: LocalDate, to: LocalDate, userId: String): List<AppointmentDTO> {
+        val appointments = this.appointmentRepository.findAllByDateIntervals(from, to, userId)
 
         if (appointments.isEmpty()) {
             throw HttpServerErrorException(

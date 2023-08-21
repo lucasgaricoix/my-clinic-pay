@@ -10,7 +10,7 @@ interface AppointmentService {
 
     fun findByDateAndUserId(date: LocalDateTime, userId: String): AppointmentDTO
 
-    fun findWeeklyAppointments(from: LocalDate, to: LocalDate): List<AppointmentDTO>
+    fun findWeeklyAppointments(from: LocalDate, to: LocalDate, userId: String): List<AppointmentDTO>
 
     fun deleteById(id: String, scheduleId: String): String
 }
