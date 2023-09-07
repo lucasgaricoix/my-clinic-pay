@@ -10,4 +10,8 @@ interface AppointmentRepository {
     fun findByDateAndUserId(date: LocalDate, userId: String): AppointmentEntity?
 
     fun updateScheduledEntityById(id: ObjectId?, appointmentEntity: AppointmentEntity): String
+
+    fun findAllByDateIntervals(from: LocalDate, to: LocalDate, userId: String): List<AppointmentEntity>
+
+    fun deleteByScheduleId(id: String, scheduleId: String): String
 }

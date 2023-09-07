@@ -15,12 +15,12 @@ class UpdatePersonRepository : UpdatePersonRepository {
     private val collectionName = "person"
     override fun update(person: Person): String {
         val mongodbTemplate = Connection.getTemplate()
-        val query = Query(Criteria.where("_id").isEqualTo(ObjectId(person.id)))
+        val query = Query(Criteria.where("_id").isEqualTo(person.id))
         val toUpdate = Update()
             .set("name", person.name)
             .set("birthDate", person.birthDate)
             .set("responsible", person.responsible)
-            .set("paymentType", person.paymentType)
+            .set("paymentTypeId", person.paymentType?.id)
 
         val updated = mongodbTemplate.updateFirst(query, toUpdate, collectionName)
         if (updated.modifiedCount <= 0) {

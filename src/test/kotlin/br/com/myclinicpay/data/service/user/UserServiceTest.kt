@@ -1,5 +1,6 @@
 package br.com.myclinicpay.data.service.user
 
+import br.com.myclinicpay.data.service.authentication.AESUtil
 import br.com.myclinicpay.domain.model.schedule.Interval
 import br.com.myclinicpay.domain.model.schedule.Schedule
 import br.com.myclinicpay.domain.model.schedule.ScheduleRules
@@ -18,15 +19,16 @@ class UserServiceTest {
     @Test
     fun `update should change results successfully`() {
         val user = this.getUser()
+        val aesUtil = AESUtil()
 
-        whenever(userRepositoryMock.updateUser(user))
-            .thenReturn(user.toEntity())
+        whenever(userRepositoryMock.updateUser(user, aesUtil))
+            .thenReturn(user.toEntity(aesUtil))
 
         val service = UserService(userRepositoryMock)
 
-        val userEntity = service.updateUser(user)
+        val userEntity = service.updateUser(user, aesUtil)
 
-        Mockito.verify(userRepositoryMock).updateUser(user)
+        Mockito.verify(userRepositoryMock).updateUser(user, aesUtil)
 
         Assertions.assertEquals("lucasgaricoix@gmail.com", userEntity.email)
     }
@@ -35,9 +37,10 @@ class UserServiceTest {
     fun `findUserById should return successfully`() {
         val id = ObjectId.get().toString()
         val user = this.getUser()
+        val aesUtil = AESUtil()
 
         whenever(userRepositoryMock.findById(id))
-            .thenReturn(user.toEntity())
+            .thenReturn(user.toEntity(aesUtil))
 
         val service = UserService(userRepositoryMock)
 

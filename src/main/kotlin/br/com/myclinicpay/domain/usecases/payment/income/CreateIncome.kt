@@ -4,4 +4,6 @@ import br.com.myclinicpay.domain.model.payment.Income
 
 interface CreateIncome {
     fun create(income: Income) : Income
+
+    fun findLastSessionId(): Int
 }

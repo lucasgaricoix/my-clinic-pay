@@ -8,8 +8,7 @@ import br.com.myclinicpay.presentation.controller.payment.expense.*
 class ExpenseBuilder {
     fun create(): CreateExpenseController {
         val repository = CreateExpenseRepository()
-        val paymentTypeRepository = FindPaymentTypeByIdRepository()
-        val service = CreateExpenseService(repository, paymentTypeRepository)
+        val service = CreateExpenseService(repository)
         return CreateExpenseController(service)
     }
 
