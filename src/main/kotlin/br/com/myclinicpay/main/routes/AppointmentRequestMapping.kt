@@ -26,12 +26,13 @@ class AppointmentRequestMapping {
         return AppointmentFactory().build().findAppointmentByDateAndUser(date, userId)
     }
 
-    @GetMapping("/weekly")
+    @GetMapping("/{userId}/weekly")
     fun findAppointments(
+        @PathVariable userId: String,
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam(name = "from") from: LocalDateTime,
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam(name = "to") to: LocalDateTime,
     ): ResponseEntity<List<AppointmentDTO>> {
-        return AppointmentFactory().build().findWeeklyAppointments(from.toLocalDate(), to.toLocalDate())
+        return AppointmentFactory().build().findWeeklyAppointments(from.toLocalDate(), to.toLocalDate(), userId)
     }
 
     @DeleteMapping("/{id}/{scheduleId}")

@@ -49,12 +49,12 @@ class AppointmentServiceTest {
         val from = LocalDate.now()
         val to = from.plusDays(6)
 
-        whenever(appointmentRepositoryMock.findAllByDateIntervals(from, to))
+        whenever(appointmentRepositoryMock.findAllByDateIntervals(from, to,))
             .thenReturn(this.getListOfAppointment(from.plusDays(3)))
 
         val appointments = service.findWeeklyAppointments(from, to)
 
-        Mockito.verify(appointmentRepositoryMock).findAllByDateIntervals(from, to)
+        Mockito.verify(appointmentRepositoryMock).findAllByDateIntervals(from, to,)
 
         Assertions.assertEquals(2, appointments.size)
     }

@@ -22,8 +22,8 @@ class AppointmentController(private val appointmentService: AppointmentService) 
         return ResponseEntity(appointmentService.findByDateAndUserId(date, userId), HttpStatus.OK)
     }
 
-    fun findWeeklyAppointments(from: LocalDate, to: LocalDate): ResponseEntity<List<AppointmentDTO>> {
-        return ResponseEntity(appointmentService.findWeeklyAppointments(from, to), HttpStatus.OK)
+    fun findWeeklyAppointments(from: LocalDate, to: LocalDate, userId: String): ResponseEntity<List<AppointmentDTO>> {
+        return ResponseEntity(appointmentService.findWeeklyAppointments(from, to, userId), HttpStatus.OK)
     }
 
     fun deleteById(id: String, scheduleId: String): ResponseEntity<String> {
