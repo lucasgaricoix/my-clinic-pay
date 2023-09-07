@@ -1,8 +1,8 @@
 name: Deploy to Digitalocean Droplet
 
-on:
-  push:
-    branches: [ "main" ]
+on: workflow_dispatch
+#  push:
+#    branches: [ "main" ]
 
 jobs:
   build:
