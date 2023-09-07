@@ -38,7 +38,10 @@ class UserService(private val userRepository: UserRepository) : UserContract, Us
     }
 
     override fun findByUserEmail(email: String?): User {
-        val userEntity = userRepository.findByEmail(email!!)
+        if (email == null) {
+            throw HttpServerErrorException(HttpStatus.BAD_REQUEST, "E-mail não foi informado")
+        }
+        val userEntity = userRepository.findByEmail(email)
             ?: throw HttpServerErrorException(HttpStatus.NOT_FOUND, "Não foi encontrado o usário por email")
 
         return userEntity.toModel()
