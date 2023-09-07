@@ -6,6 +6,7 @@ import com.mongodb.MongoClientSettings
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
@@ -15,7 +16,12 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter
 
 @Configuration
-class MongodbMultiTenantConfig(@Autowired val tenantHolder: TenantHolder) : AbstractMongoClientConfiguration() {
+class MongodbMultiTenantConfig : AbstractMongoClientConfiguration() {
+    @Autowired
+    private lateinit var tenantHolder: TenantHolder
+
+    @Value("\${spring.data.mongodb.uri}")
+    private lateinit var connectionString: String
 
     override fun getDatabaseName(): String {
         return tenantHolder.getTenant().toString()
@@ -24,8 +30,7 @@ class MongodbMultiTenantConfig(@Autowired val tenantHolder: TenantHolder) : Abst
     @Primary
     @Bean
     override fun mongoClient(): MongoClient {
-        val connectionString =
-            ConnectionString("mongodb+srv://lgaricoix:010133@cluster0.42jwu.mongodb.net/?retryWrites=true&w=majority")
+        val connectionString = ConnectionString(connectionString)
         val mongodbClientSettings = MongoClientSettings.builder()
             .applyConnectionString(connectionString)
             .build()

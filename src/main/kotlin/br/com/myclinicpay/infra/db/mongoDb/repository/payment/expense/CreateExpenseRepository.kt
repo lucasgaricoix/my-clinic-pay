@@ -15,11 +15,11 @@ import org.springframework.web.client.HttpServerErrorException
 
 @Repository
 class CreateExpenseRepository : CreateExpenseRepository {
-    override fun create(expense: Expense, paymentType: PaymentType): Expense {
+    override fun create(expense: Expense): Expense {
         try {
             val mongoTemplate = Connection.getTemplate()
-            val created = mongoTemplate.save<ExpenseEntity>(toEntity(expense, paymentType), "expense")
-            mongoTemplate.save(toPaymentEntity(created, paymentType))
+            val created = mongoTemplate.save<ExpenseEntity>(toEntity(expense), "expense")
+            mongoTemplate.save(toPaymentEntity(created))
             return toDomainModel(created)
         } catch (error: Exception) {
             throw HttpServerErrorException(
@@ -31,16 +31,15 @@ class CreateExpenseRepository : CreateExpenseRepository {
 
     private fun toPaymentEntity(
         expense: ExpenseEntity,
-        paymentType: PaymentType
     ): PaymentEntity {
         return PaymentEntity(
             ObjectId.get(),
             expense.date,
             PaymentTypeEntity(
-                ObjectId(paymentType.id),
-                paymentType.type.value,
-                paymentType.description,
-                paymentType.value
+                expense.paymentType.id,
+                expense.paymentType.type,
+                expense.paymentType.description,
+                expense.paymentType.value
             ),
             expense.description
         )
@@ -62,20 +61,17 @@ class CreateExpenseRepository : CreateExpenseRepository {
         )
     }
 
-    private fun toEntity(
-        expense: Expense,
-        paymentType: PaymentType,
-    ): ExpenseEntity {
+    private fun toEntity(expense: Expense): ExpenseEntity {
         return ExpenseEntity(
             ObjectId.get(),
             expense.date,
             expense.dueDate,
             expense.paymentDate,
             PaymentTypeEntity(
-                ObjectId(paymentType.id),
-                paymentType.type.value,
-                paymentType.description,
-                paymentType.value
+                ObjectId(expense.paymentType.id),
+                expense.paymentType.type.value,
+                expense.paymentType.description,
+                expense.paymentType.value
             ),
             expense.description
         )

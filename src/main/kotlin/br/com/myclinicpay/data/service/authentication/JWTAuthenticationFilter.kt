@@ -48,7 +48,8 @@ class JWTAuthenticationFilter(
         val token = jwtUtil.generateToken(userName, userDetails.getId(), userDetails.getName())
         val refreshToken = refreshTokenService.create(userName)
         response.addHeader("Authorization", "Bearer $token")
-        response.addHeader("Refresh-token", jwtUtil.generateRefreshTokenCookie(refreshToken.token).toString())
+        val refreshTokenCookie = jwtUtil.generateRefreshTokenCookie(refreshToken.token)
+        response.addHeader("Refresh-token", refreshTokenCookie.value)
     }
 
     override fun unsuccessfulAuthentication(

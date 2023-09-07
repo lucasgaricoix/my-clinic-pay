@@ -12,10 +12,10 @@ import java.time.LocalDate
 @Repository
 class FindAllBySessionIdIncomeRepository : FindAllBySessionIdIncomeRepository {
     override fun findAll(initialRange: LocalDate, finalRange: LocalDate): Int {
-        val mongoTemplate = Connection.getTemplate()
+        val mongodbTemplate = Connection.getTemplate()
         val query = Query(Criteria.where("date").gte(initialRange).lte(finalRange))
         val sortedIncomes =
-            mongoTemplate.find<IncomeEntity>(query, "income").sortedByDescending { it.sessionNumber }.toList()
+            mongodbTemplate.find<IncomeEntity>(query, "income").sortedByDescending { it.sessionNumber }.toList()
         val lastSession = sortedIncomes.firstOrNull()?.sessionNumber ?: 1
         return lastSession.inc()
     }
