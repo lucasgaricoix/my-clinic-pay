@@ -44,4 +44,6 @@ jobs:
           key: ${{ secrets.DIGITALOCEAN_KEY }}
           script_stop: true
           script: |
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest && docker run -d --restart unless-stopped -p ${{ env.PORT }}:${{ env.PORT }} ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+            docker rm -f $(docker ps -aq) \
+            && docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest \
+            && docker run -d --restart unless-stopped -p ${{ env.PORT }}:${{ env.PORT }} ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
