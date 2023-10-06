@@ -20,10 +20,13 @@ class Income(
     val isPartial: Boolean = false,
     val isAbsence: Boolean = false,
     val person: Person,
-    val scheduleId: String
+    val scheduleId: String? = null
 ) : Payment() {
     fun toEntity(lastSession: Int?): IncomeEntity {
-        val scheduleId = ObjectId(this.scheduleId)
+        var scheduleIdEntity = ObjectId()
+        if (scheduleId != null) {
+            scheduleIdEntity = ObjectId(scheduleId)
+        }
         var value = this.paymentType.value
         if (this.isPartial) {
             value = this.paymentType.value / 2
@@ -34,20 +37,20 @@ class Income(
         }
 
         return IncomeEntity(
-            ObjectId.get(),
-            this.date,
-            PaymentTypeEntity(
+            id = ObjectId.get(),
+            date = this.date,
+            paymentType = PaymentTypeEntity(
                 ObjectId(this.paymentType.id),
                 this.paymentType.type.value,
                 this.paymentType.description,
                 value
             ),
-            this.description,
-            this.sessionNumber ?: lastSession ?: 0,
-            this.isPaid,
-            this.isPartial,
-            this.isAbsence,
-            PersonEntity(
+            description = this.description,
+            sessionNumber = this.sessionNumber ?: lastSession ?: 0,
+            isPaid = this.isPaid,
+            isPartial = this.isPartial,
+            isAbsence = this.isAbsence,
+            person = PersonEntity(
                 ObjectId(this.person.id),
                 this.person.name,
                 this.person.birthDate,
@@ -57,7 +60,7 @@ class Income(
                 ),
                 this.paymentType.id,
             ),
-            scheduleId
+            scheduleId = scheduleIdEntity
         )
     }
 }
