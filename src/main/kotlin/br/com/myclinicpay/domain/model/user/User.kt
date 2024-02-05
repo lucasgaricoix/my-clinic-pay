@@ -10,6 +10,7 @@ import br.com.myclinicpay.infra.db.mongoDb.entities.ScheduleSettingsEntity
 import br.com.myclinicpay.infra.db.mongoDb.entities.SettingsEntity
 import br.com.myclinicpay.infra.db.mongoDb.entities.UserEntity
 import org.bson.types.ObjectId
+import org.springframework.beans.factory.annotation.Autowired
 import java.io.Serializable
 
 data class User(
@@ -22,6 +23,7 @@ data class User(
     val settings: Settings?,
     val tenantId: String? = "default"
 ) : Serializable {
+
     constructor(
         id: String?,
         name: String,
@@ -34,13 +36,13 @@ data class User(
     fun toEntity(aesUtil: AESUtil): UserEntity {
         if (this.settings != null) {
             return UserEntity(
-                ObjectId.get(),
-                this.name,
-                this.email,
-                aesUtil.encode(this.password),
-                this.picture,
-                this.role,
-                SettingsEntity(
+                id = ObjectId.get(),
+                name = this.name,
+                email = this.email,
+                password = aesUtil.encode(this.password),
+                picture = this.picture,
+                role = this.role,
+                settings = SettingsEntity(
                     ObjectId.get(),
                     ScheduleSettingsEntity(
                         ObjectId.get(),

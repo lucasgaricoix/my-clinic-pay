@@ -1,6 +1,7 @@
 package br.com.myclinicpay.infra.db.mongoDb.repository.payment.type
 
 import br.com.myclinicpay.data.usecases.payment.type.FindPaymentTypeByIdRepository
+import br.com.myclinicpay.domain.model.payment_type.PaymentType
 import br.com.myclinicpay.infra.db.mongoDb.Connection
 import br.com.myclinicpay.infra.db.mongoDb.entities.PaymentTypeEntity
 import org.bson.types.ObjectId

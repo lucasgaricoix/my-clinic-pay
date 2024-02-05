@@ -1,11 +1,12 @@
 package br.com.myclinicpay.data.service.appointment
 
+import br.com.myclinicpay.data.service.authentication.AESUtil
+import br.com.myclinicpay.data.service.payment.income.CreateIncomeService
+import br.com.myclinicpay.data.service.payment.income.DeleteIncomeService
+import br.com.myclinicpay.data.service.payment.type.FindPaymentTypeByIdService
+import br.com.myclinicpay.data.service.person.FindPersonService
+import br.com.myclinicpay.data.service.user.UserService
 import br.com.myclinicpay.data.usecases.appointment.AppointmentRepository
-import br.com.myclinicpay.data.usecases.payment.income.FindAllBySessionIdIncomeRepository
-import br.com.myclinicpay.data.usecases.payment.income.IncomeRepository
-import br.com.myclinicpay.data.usecases.payment.type.FindPaymentTypeByIdRepository
-import br.com.myclinicpay.data.usecases.person.FindPersonByIdRepository
-import br.com.myclinicpay.data.usecases.user.UserRepository
 import br.com.myclinicpay.domain.model.appointment.Appointment
 import br.com.myclinicpay.domain.model.appointment.AppointmentDTO
 import br.com.myclinicpay.domain.model.payment.Income
@@ -14,26 +15,29 @@ import br.com.myclinicpay.infra.db.mongoDb.entities.AppointmentEntity
 import br.com.myclinicpay.infra.db.mongoDb.entities.PaymentTypeEntity
 import br.com.myclinicpay.infra.db.mongoDb.entities.PersonEntity
 import org.bson.types.ObjectId
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpServerErrorException
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
 
 @Service
-class AppointmentService(
-    private val findPersonByIdRepository: FindPersonByIdRepository,
-    private val userRepository: UserRepository,
-    private val appointmentRepository: AppointmentRepository,
-    private val incomeRepository: IncomeRepository,
-    private val findAllBySessionIdIncomeRepository: FindAllBySessionIdIncomeRepository,
-    private val findPaymentTypeByIdRepository: FindPaymentTypeByIdRepository
+class AppointmentService @Autowired constructor(
+    val findPersonService: FindPersonService,
+    val userService: UserService,
+    val deleteIncomeService: DeleteIncomeService,
+    val createIncomeService: CreateIncomeService,
+    val findPaymentTypeByIdService: FindPaymentTypeByIdService,
+    val appointmentRepository: AppointmentRepository,
+    val aesUtil: AESUtil
 ) : AppointmentService {
+
     private val timeZoneOffset = 3L
     override fun createOrUpdate(appointment: Appointment): String {
-        val personEntity = findPersonByIdRepository.findEntityById(appointment.patientId)
-        val paymentType = personEntity.paymentTypeId?.let { findPaymentTypeByIdRepository.findById(it) }
+        val person = findPersonService.findById(appointment.patientId)
+        val paymentType =
+            person.paymentType?.let { paymentType -> paymentType.id?.let { findPaymentTypeByIdService.findById(it) } }
 
         val adaptedAppointment = appointment.toEntity()
 
@@ -41,7 +45,7 @@ class AppointmentService(
 
         if (appointmentExists == null) {
             val appointmentCreated = appointmentRepository.create(adaptedAppointment)
-            this.createPayment(appointmentCreated, personEntity, paymentType, null)
+            createPayment(appointmentCreated, person.toEntity(), paymentType?.toEntity(), null)
             return appointmentCreated.id.toString()
         }
 
@@ -54,10 +58,11 @@ class AppointmentService(
         appointmentExists.schedules.addAll(adaptedAppointment.schedules)
 
         appointmentRepository.updateScheduledEntityById(appointmentExists.id, appointmentExists)
+
         this.createPayment(
             appointmentExists,
-            personEntity,
-            paymentType,
+            person.toEntity(),
+            paymentType?.toEntity(),
             adaptedAppointment.schedules.first().id.toString()
         )
 
@@ -65,8 +70,7 @@ class AppointmentService(
     }
 
     override fun findByDateAndUserId(date: LocalDateTime, userId: String): AppointmentDTO {
-        val user = this.userRepository.findById(userId)
-            ?: throw HttpServerErrorException(HttpStatus.NOT_FOUND, "Não foi possível encontrar o usuário")
+        val user = userService.findUserById(userId)
         val zonedTime = date.minusHours(timeZoneOffset).toLocalDate()
         val appointment = appointmentRepository.findByDateAndUserId(zonedTime, userId)
             ?: throw HttpServerErrorException(HttpStatus.NOT_FOUND, "Não foi possível encontrar uma agenda")
@@ -74,16 +78,15 @@ class AppointmentService(
         appointment.schedules.sortBy { it.start }
 
         val scheduleDTO = appointment.schedules.map {
-            val patient = this.findPersonByIdRepository.findById(it.patientId.toString())
-            val paymentType = this.findPaymentTypeByIdRepository.findById(patient.paymentTypeId.toString())
-            it.toDTO(patient.toModel(paymentType))
+            val patient = findPersonService.findById(it.patientId.toString())
+            it.toDTO(patient)
         }
 
-        return appointment.toDTO(user, scheduleDTO)
+        return appointment.toDTO(user.toEntity(aesUtil), scheduleDTO)
     }
 
     override fun findWeeklyAppointments(from: LocalDate, to: LocalDate, userId: String): List<AppointmentDTO> {
-        val appointments = this.appointmentRepository.findAllByDateIntervals(from, to, userId)
+        val appointments = appointmentRepository.findAllByDateIntervals(from, to, userId)
 
         if (appointments.isEmpty()) {
             throw HttpServerErrorException(
@@ -92,8 +95,7 @@ class AppointmentService(
             )
         }
 
-        val user = this.userRepository.findById(appointments.first().userId)
-            ?: throw HttpServerErrorException(HttpStatus.NOT_FOUND, "Não foi possível encontrar o usuário")
+        val user = userService.findUserById(appointments.first().userId)
 
         appointments.sortedBy { it.date }
 
@@ -103,11 +105,10 @@ class AppointmentService(
 
         return appointments.map {
             val scheduleDTO = it.schedules.map { schedule ->
-                val patient = this.findPersonByIdRepository.findById(schedule.patientId.toString())
-                val paymentType = this.findPaymentTypeByIdRepository.findById(patient.paymentTypeId.toString())
-                schedule.toDTO(patient.toModel(paymentType))
+                val patient = this.findPersonService.findById(schedule.patientId.toString())
+                schedule.toDTO(patient)
             }
-            it.toDTO(user, scheduleDTO)
+            it.toDTO(user.toEntity(aesUtil), scheduleDTO)
         }
     }
 
@@ -115,7 +116,7 @@ class AppointmentService(
         val deletedId = this.appointmentRepository.deleteByScheduleId(id, scheduleId)
 
         if (deletedId.isNotBlank()) {
-            this.deletePayment(scheduleId)
+            deleteIncomeService.deleteByScheduleId(scheduleId)
         }
 
         return deletedId
@@ -136,11 +137,6 @@ class AppointmentService(
 
         val getScheduleId = scheduleId ?: appointment.schedules.first().id.toString()
 
-        val lastDayMonth = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH)
-        val initialRange = LocalDate.of(LocalDate.now().year, LocalDate.now().month, 1)
-        val finalRange = LocalDate.of(LocalDate.now().year, LocalDate.now().month, lastDayMonth)
-        val lastSession = this.findAllBySessionIdIncomeRepository.findAll(initialRange, finalRange)
-
         val income = Income(
             ObjectId.get().toString(),
             date = appointment.date,
@@ -154,12 +150,8 @@ class AppointmentService(
             scheduleId = getScheduleId,
         )
 
-        val created = this.incomeRepository.create(income, lastSession)
+        val created = createIncomeService.create(income)
 
         return created.id
-    }
-
-    private fun deletePayment(scheduleId: String): String {
-        return this.incomeRepository.deleteByScheduleId(scheduleId)
     }
 }

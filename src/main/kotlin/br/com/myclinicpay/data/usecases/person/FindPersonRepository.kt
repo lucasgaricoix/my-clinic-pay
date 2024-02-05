@@ -2,7 +2,6 @@ package br.com.myclinicpay.data.usecases.person
 
 import br.com.myclinicpay.infra.db.mongoDb.entities.PersonEntity
 
-interface FindPersonByIdRepository {
+interface FindPersonRepository {
     fun findById(id: String) : PersonEntity
-    fun findEntityById(id: String) : PersonEntity
 }

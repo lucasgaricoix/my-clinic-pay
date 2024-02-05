@@ -1,7 +1,6 @@
 package br.com.myclinicpay.data.service.appointment
 
 import br.com.myclinicpay.data.service.authentication.AESUtil
-import br.com.myclinicpay.data.usecases.payment.income.FindAllBySessionIdIncomeRepository
 import br.com.myclinicpay.data.usecases.payment.income.IncomeRepository
 import br.com.myclinicpay.domain.model.appointment.Appointment
 import br.com.myclinicpay.domain.model.appointment.AppointmentType
@@ -12,7 +11,7 @@ import br.com.myclinicpay.domain.model.setting.Settings
 import br.com.myclinicpay.domain.model.user.User
 import br.com.myclinicpay.infra.db.mongoDb.entities.*
 import br.com.myclinicpay.infra.db.mongoDb.repository.appointment.AppointmentRepository
-import br.com.myclinicpay.infra.db.mongoDb.repository.person.FindPersonByIdRepository
+import br.com.myclinicpay.infra.db.mongoDb.repository.person.FindPersonRepository
 import br.com.myclinicpay.infra.db.mongoDb.repository.user.UserRepository
 import org.bson.types.ObjectId
 import org.junit.jupiter.api.Assertions
@@ -30,7 +29,7 @@ class AppointmentServiceTest {
     @Autowired
     private lateinit var aesUtil: AESUtil
 
-    private val findPersonByIdRepository = mock<FindPersonByIdRepository>()
+    private val findPersonByIdRepository = mock<FindPersonRepository>()
     private val userRepository = mock<UserRepository>()
     private val appointmentRepositoryMock = mock<AppointmentRepository>()
     private val incomeRepositoryMock = mock<IncomeRepository>()

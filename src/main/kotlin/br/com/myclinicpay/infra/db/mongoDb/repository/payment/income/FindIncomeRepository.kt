@@ -1,15 +1,32 @@
 package br.com.myclinicpay.infra.db.mongoDb.repository.payment.income
 
-import br.com.myclinicpay.data.usecases.payment.income.FindAllIncomeRepository
+import br.com.myclinicpay.data.usecases.payment.income.FindIncomeRepository
 import br.com.myclinicpay.infra.db.mongoDb.Connection
 import br.com.myclinicpay.infra.db.mongoDb.entities.IncomeEntity
+import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.aggregate
 import org.springframework.data.mongodb.core.aggregation.Aggregation
+import org.springframework.data.mongodb.core.find
+import org.springframework.data.mongodb.core.findById
 import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.Query
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Repository
+import org.springframework.web.client.HttpServerErrorException
+import java.time.LocalDate
 
 @Repository
-class FindAllIncomeRepository : FindAllIncomeRepository {
+class FindIncomeRepository : FindIncomeRepository {
+    override fun findById(id: String): IncomeEntity {
+        val mongoTemplate = Connection.getTemplate()
+
+        return mongoTemplate.findById<IncomeEntity>(ObjectId(id), "income")
+            ?: throw HttpServerErrorException(
+                HttpStatus.NOT_FOUND,
+                "Não foi possível encontrar o pagamento com o id $id"
+            )
+    }
+
     override fun findAll(month: Int, year: Int): List<IncomeEntity> {
         val mongodbTemplate = Connection.getTemplate()
         val projection = Aggregation.project("id")
@@ -32,5 +49,14 @@ class FindAllIncomeRepository : FindAllIncomeRepository {
         )
 
         return data.mappedResults.toList()
+    }
+
+    override fun findLastSession(initialRange: LocalDate, finalRange: LocalDate): Int {
+        val mongodbTemplate = Connection.getTemplate()
+        val query = Query(Criteria.where("date").gte(initialRange).lte(finalRange))
+        val sortedIncomes =
+            mongodbTemplate.find<IncomeEntity>(query, "income").sortedByDescending { it.sessionNumber }.toList()
+        val lastSession = sortedIncomes.firstOrNull()?.sessionNumber ?: 1
+        return lastSession.inc()
     }
 }
