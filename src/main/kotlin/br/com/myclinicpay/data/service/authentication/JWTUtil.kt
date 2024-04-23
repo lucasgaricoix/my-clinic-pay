@@ -14,7 +14,7 @@ class JWTUtil {
     @Value("\${jwt.secret}")
     private lateinit var secret: String
 
-    private val localDate = LocalDate.now().plusDays(2)
+    private val localDate = LocalDate.now().plusMonths(1)
 
     private val date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
     fun generateToken(email: String, id: String, name: String): String {

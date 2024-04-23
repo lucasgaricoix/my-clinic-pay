@@ -47,8 +47,8 @@ class JWTAuthenticationFilter(
         val userName = userDetails.username
         val token = jwtUtil.generateToken(userName, userDetails.getId(), userDetails.getName())
         val refreshToken = refreshTokenService.create(userName)
-        response.addHeader("Authorization", "Bearer $token")
         val refreshTokenCookie = jwtUtil.generateRefreshTokenCookie(refreshToken.token)
+        response.addHeader("Authorization", "Bearer $token")
         response.addHeader("Refresh-token", refreshTokenCookie.value)
     }
 

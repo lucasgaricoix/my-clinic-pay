@@ -29,7 +29,7 @@ class IncomeRepository : IncomeRepository {
         } catch (error: Exception) {
             throw HttpServerErrorException(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "Não foi possível persistir o pagament\n$error"
+                "Não foi possível persistir o pagamento\n$error"
             )
         }
     }
